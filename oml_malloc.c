@@ -1,6 +1,6 @@
 #include "oml_debug.h"
 
-#if defined(OML_KS)
+#if defined(__KERNEL__)
 #  include <linux/kernel.h>
 #  include <linux/module.h>
 #  include <linux/sched.h>
@@ -10,7 +10,7 @@
 #  include <stdlib.h>
 #endif
 
-#include "oml_memory.h"
+#include "oml_malloc.h"
 
 #ifdef OML_MEMORY_CHECK
 
@@ -18,7 +18,7 @@
 static void * chunks[MAX_CHUNK_NUMBER];
 static int curr_chunks = 0;
 static int mem_failure = 0;
-#ifdef OML_KS
+#ifdef __KERNEL__
 spinlock_t chunks_lock __cacheline_aligned;
 #endif
 
@@ -47,7 +47,7 @@ int rem_chunk(void *ptr) {
   return 0;
 }
 
-#ifdef OML_KS
+#ifdef __KERNEL__
 #  define chunks_vars unsigned long flags
 #  define chunks_lock spin_lock_irqsave(&chunks_lock, flags)
 #  define chunks_unlock spin_unlock_irqrestore(&chunks_lock, flags)
@@ -60,7 +60,7 @@ int rem_chunk(void *ptr) {
 #endif /* MEMORY_CHECK */
 
 static inline void *oml_ll_malloc(long size) {
-#if defined(OML_KS)
+#if defined(__KERNEL__)
   return kmalloc(size, GFP_ATOMIC);
 #else
   return malloc(size);
@@ -68,7 +68,7 @@ static inline void *oml_ll_malloc(long size) {
 }
 
 static inline void oml_ll_free(void *ptr) {
-#if defined(OML_KS)
+#if defined(__KERNEL__)
   kfree(ptr);
 #else
   free(ptr);
@@ -126,7 +126,7 @@ int oml_mem_clean() {
 #endif
 }
 
-#ifdef OML_KS
+#ifdef __KERNEL__
 EXPORT_SYMBOL_GPL(oml_malloc);
 EXPORT_SYMBOL_GPL(oml_free);
 EXPORT_SYMBOL_GPL(oml_mem_clean);

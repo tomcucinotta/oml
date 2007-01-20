@@ -8,6 +8,8 @@
  */
 
 #include "oml_debug.h"
+#include "oml_malloc.h"
+#include "oml_common.h"
 
 #define oml_define_theap(key_type, value_type) \
   typedef struct oml_theap_node_##key_type ##_##value_type ##_t { \
@@ -21,21 +23,21 @@
     oml_theap_node_##key_type ##_##value_type ##_t *p_node; \
   } oml_theap_iterator_##key_type ##_##value_type ##_t; \
   typedef struct oml_theap_##key_type ##_##value_type ##_t { \
-    oml_theap_node_t(key_type, value_type) *p_root; \
-    oml_theap_node_t(key_type, value_type) *p_first_leaf; \
-    oml_theap_node_t(key_type, value_type) *p_last_leaf; \
+    oml_theap_node(key_type, value_type) *p_root; \
+    oml_theap_node(key_type, value_type) *p_first_leaf; \
+    oml_theap_node(key_type, value_type) *p_last_leaf; \
     /* Fictious element used for typeof() purposes */ \
-    oml_theap_iterator_t(key_type, value_type) *p_it; \
+    oml_theap_iterator(key_type, value_type) *p_it; \
     int num_elems; \
   } oml_theap_##key_type ##_##value_type ##_t
 
-#define oml_theap_node_t(key_type, value_type) \
+#define oml_theap_node(key_type, value_type) \
   oml_theap_node_##key_type ##_##value_type ##_t
 
-#define oml_theap_iterator_t(key_type, value_type) \
+#define oml_theap_iterator(key_type, value_type) \
   oml_theap_iterator_##key_type ##_##value_type ##_t
 
-#define oml_theap_t(key_type, value_type) \
+#define oml_theap(key_type, value_type) \
   oml_theap_##key_type ##_##value_type ##_t
 
 #define oml_theap_iterator_begin(this, p_it) \
@@ -71,7 +73,7 @@
   } while (0)
 
 #define oml_theap_dump(this) ({ \
-  int __rv = OML_OK; \
+  oml_rv __rv = OML_OK; \
   do { \
     typeof((this)->p_root) __p_first_leaf = (this)->p_root; \
     typeof((this)->p_root) __p_dnode = (this)->p_root; \
@@ -90,7 +92,7 @@
 })
 
 #define oml_theap_init(this) ({ \
-  int __rv = OML_OK; \
+  oml_rv __rv = OML_OK; \
   do { \
     (this)->p_root = NULL; \
     (this)->p_first_leaf = NULL; \
@@ -156,7 +158,7 @@
 
 oml_define_theap(int, int);
 
-void oml_theap_swap_node(struct oml_theap_t(int, int) *this, struct oml_theap_node_t(int, int) *p_node1, struct oml_theap_node_t(int, int) *p_node2) { \
+void oml_theap_swap_node(struct oml_theap(int, int) *this, struct oml_theap_node(int, int) *p_node1, struct oml_theap_node(int, int) *p_node2) { \
   do { \
     typeof(p_node1) __sn_p1 = (p_node1); \
     typeof(p_node2) __sn_p2 = (p_node2); \
@@ -182,7 +184,7 @@ void oml_theap_swap_node(struct oml_theap_t(int, int) *this, struct oml_theap_no
 }
 
 #define oml_theap_add(this, _key, _value) ({ \
-  int __rv = OML_OK; \
+  oml_rv __rv = OML_OK; \
   do { \
     typeof((this)->p_root) __p_node = oml_malloc(sizeof(typeof(*(this)->p_root))); \
     if (__p_node == NULL) { \
@@ -256,7 +258,7 @@ void oml_theap_swap_node(struct oml_theap_t(int, int) *this, struct oml_theap_no
 })
 
 #define oml_theap_del_last(this) ({ \
-  int __rv = OML_OK; \
+  oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
       __rv = OML_E_EMPTY; \
@@ -270,7 +272,7 @@ void oml_theap_swap_node(struct oml_theap_t(int, int) *this, struct oml_theap_no
       /* Deleting unique elem of level */ \
       oml_log_debug("Deleting unique elem of level"); \
       (this)->p_last_leaf->p_fath->p_left_child = NULL; \
-      assert((this)->p_last_leaf->p_fath->p_right_child == NULL); \
+      oml_assert((this)->p_last_leaf->p_fath->p_right_child == NULL); \
       (this)->p_first_leaf = (this)->p_last_leaf->p_fath; \
       oml_free((this)->p_last_leaf); \
       (this)->p_last_leaf = (this)->p_first_leaf->p_prev; \
@@ -293,7 +295,7 @@ void oml_theap_swap_node(struct oml_theap_t(int, int) *this, struct oml_theap_no
 })
 
 #define oml_theap_del_min(this) ({ \
-  int __rv = OML_OK; \
+  oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
       __rv = OML_E_EMPTY; \
@@ -322,7 +324,7 @@ void oml_theap_swap_node(struct oml_theap_t(int, int) *this, struct oml_theap_no
 })
 
 #define oml_theap_get_min(this, p_key, p_value) ({ \
-  int __rv = OML_OK; \
+  oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
       __rv = OML_E_EMPTY; \

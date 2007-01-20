@@ -1,46 +1,49 @@
-#ifndef OML_EHEAP_H_
-#define OML_EHEAP_H_
+#ifndef __OML_EHEAP_H__
+#define __OML_EHEAP_H__
 
 /**
  * @file
  * 
- * @brief Generic array-based extraction-efficient heap implementation
+ * @brief Generic array-based extraction-efficient min-heap implementation.
+ * 
+ * @note If you need to compare keys with anything different from the operator
+ * "<", then you should use the key_eheap_add_lt and key_eheap_del_lt versions
+ * of the insert and remove operations, which support the name of the comparison
+ * function or macro as further argument (look at oml_default_lt in oml_common.h
+ * for details).
  */
 
 #include "oml_debug.h"
-#include "oml_memory.h"
+#include "oml_malloc.h"
+#include "oml_common.h"
 
 /** Define eheap related types: use this macro only once per compilation unit */
 #define oml_define_eheap(key_type, value_type) \
-  typedef struct oml_eheap_iterator_##key_type ##_##value_type ##_t { \
+  typedef struct oml_eheap_iterator_##key_type ##_##value_type { \
     int pos; \
-  } oml_eheap_iterator_##key_type ##_##value_type ##_t; \
-  typedef struct oml_eheap_node_##key_type ##_##value_type ##_t { \
+  } oml_eheap_iterator_##key_type ##_##value_type; \
+  typedef struct oml_eheap_node_##key_type ##_##value_type { \
     key_type key; \
     value_type value; \
-    oml_eheap_iterator_##key_type ##_##value_type ##_t *p_iterator; \
-  } oml_eheap_node_##key_type ##_##value_type ##_t; \
-  typedef struct oml_eheap_##key_type ##_##value_type ##_t { \
-    oml_eheap_node_t(key_type, value_type) *elems; \
+    oml_eheap_iterator_##key_type ##_##value_type *p_iterator; \
+  } oml_eheap_node_##key_type ##_##value_type; \
+  typedef struct oml_eheap_##key_type ##_##value_type { \
+    oml_eheap_node(key_type, value_type) *elems; \
     int num_elems; \
     int max_num_elems; \
-  } oml_eheap_##key_type ##_##value_type ##_t
-
-#ifndef oml_eheap_key_lt
-#  define oml_eheap_key_lt(a, b) ((a) < (b))
-#endif
+  } oml_eheap_##key_type ##_##value_type
 
 /** Template-like type for a eheap node (users should not use this) */
-#define oml_eheap_node_t(key_type, value_type) \
-  struct oml_eheap_node_##key_type ##_##value_type ##_t
+#define oml_eheap_node(key_type, value_type) \
+  struct oml_eheap_node_##key_type ##_##value_type
 
 /** Template-like type for a eheap container */
-#define oml_eheap_t(key_type, value_type) \
-  oml_eheap_##key_type ##_##value_type ##_t
+#define oml_eheap(key_type, value_type) \
+  oml_eheap_##key_type ##_##value_type
 
 /** Template-like type for a eheap iterator */
-#define oml_eheap_iterator_t(key_type, value_type) \
-  oml_eheap_iterator_##key_type ##_##value_type ##_t
+#define oml_eheap_iterator(key_type, value_type) \
+  oml_eheap_iterator_##key_type ##_##value_type
 
 /** Initialize an empty eheap with (initial) max storage capacity of N
  * 
@@ -83,7 +86,7 @@
  *  Returns the correct position, in which the element has not
  *  been copied yet.
  */
-#define oml_eheap_push_down(this, param_pos, param_key) ({ \
+#define oml_eheap_push_down(this, param_pos, param_key, key_lt) ({ \
   int _pd_pos = (param_pos); \
   do { \
     int _pd_pos_child; \
@@ -91,10 +94,10 @@
 /*    printf("pos: %d\n", _pd_pos);  fflush(stdout); \
 */      _pd_pos_child = _pd_pos * 2; \
     while ( \
-        ((_pd_pos_child <= (this)->num_elems) && oml_eheap_key_lt((this)->elems[_pd_pos_child - 1].key, _pd_key)) \
-        || ((_pd_pos_child + 1 <= (this)->num_elems) && oml_eheap_key_lt((this)->elems[_pd_pos_child].key, _pd_key)) \
+        ((_pd_pos_child <= (this)->num_elems) && key_lt((this)->elems[_pd_pos_child - 1].key, _pd_key)) \
+        || ((_pd_pos_child + 1 <= (this)->num_elems) && key_lt((this)->elems[_pd_pos_child].key, _pd_key)) \
       ) { \
-        if ((_pd_pos_child + 1 <= (this)->num_elems) && oml_eheap_key_lt((this)->elems[_pd_pos_child].key, (this)->elems[_pd_pos_child - 1].key)) \
+        if ((_pd_pos_child + 1 <= (this)->num_elems) && key_lt((this)->elems[_pd_pos_child].key, (this)->elems[_pd_pos_child - 1].key)) \
           _pd_pos_child++; \
         oml_eheap_nodecpy((this), _pd_pos, _pd_pos_child); \
         _pd_pos = _pd_pos_child; \
@@ -110,12 +113,12 @@
  *  Returns the correct position, in which the element has not
  *  been copied yet.
  */
-#define oml_eheap_push_up(this, param_pos, param_key) ({ \
+#define oml_eheap_push_up(this, param_pos, param_key, key_lt) ({ \
   int _pu_pos = (param_pos); \
   do { \
     int _pu_pos_fath = _pu_pos / 2; \
 /*    printf("xpos: %d\n", _pu_pos);  fflush(stdout); \
-*/    while ((_pu_pos != 1) && oml_eheap_key_lt((param_key), (this)->elems[_pu_pos_fath - 1].key)) { \
+*/    while ((_pu_pos != 1) && key_lt((param_key), (this)->elems[_pu_pos_fath - 1].key)) { \
       oml_eheap_nodecpy((this), _pu_pos, _pu_pos_fath); \
       _pu_pos = _pu_pos_fath; \
       _pu_pos_fath = _pu_pos / 2; \
@@ -129,7 +132,7 @@
  * Add the pair (_key, _value) to the eheap, and store the corresponding
  * removal iterator in *_p_it.
  */
-#define oml_eheap_add(this, _key, _value, _p_it) ({ \
+#define oml_eheap_add_lt(this, _key, _value, _p_it, _op_key_lt) ({ \
   oml_rv __rv = OML_OK; \
   typeof((this)->elems[0].p_iterator) _a_p_it = (_p_it); \
   do { \
@@ -139,7 +142,7 @@
       break; \
     } \
     (this)->num_elems++; \
-    _a_pos = oml_eheap_push_up((this), _a_pos, (_key)); \
+    _a_pos = oml_eheap_push_up((this), _a_pos, (_key), _op_key_lt); \
     (this)->elems[_a_pos - 1].key = (_key); \
     (this)->elems[_a_pos - 1].value = (_value); \
     if (_a_p_it) { \
@@ -151,6 +154,12 @@
   } while (0); \
   __rv; \
 })
+
+/**
+ * Add the pair (_key, _value) to the eheap, and store the corresponding
+ * removal iterator in *_p_it.
+ */
+#define oml_eheap_add(this, _key, _value, _p_it) oml_eheap_add_lt((this), (_key), (_value), (_p_it), oml_default_lt)
 
 /** Return (without removing) the heap root pair, corresponding to the minimum key value */
 #define oml_eheap_get_min(this, p_key, p_value) ({ \
@@ -172,7 +181,7 @@
  * @note
  *   The corresponding iterator, if any, is not deallocated, but it is invalidated.
  */
-#define oml_eheap_del_min(this) ({ \
+#define oml_eheap_del_min_lt(this, op_key_lt) ({ \
   oml_rv __dm_rv = OML_OK; \
   int _dm_pos = 1; \
   int _dm_key; \
@@ -186,7 +195,7 @@
     _dm_key = (this)->elems[(this)->num_elems - 1].key; \
     (this)->num_elems--; \
 /*    printf("Pushing down pos: %d\n", _dm_pos); \
-*/    _dm_pos = oml_eheap_push_down((this), _dm_pos, _dm_key); \
+*/    _dm_pos = oml_eheap_push_down((this), _dm_pos, _dm_key, op_key_lt); \
 /*    printf("Copying into pos: %d\n", _dm_pos); \
 */    /* This copies on purpose from a position == num_elems + 1, 'cause we know it is legal */ \
     oml_eheap_nodecpy((this), _dm_pos, (this)->num_elems + 1); \
@@ -195,13 +204,21 @@
 })
 
 /**
+ * Remove the top (root) of the heap, alias the minimum-key element.
+ * 
+ * @note
+ *   The corresponding iterator, if any, is not deallocated, but it is invalidated.
+ */
+#define oml_eheap_del_min(this) oml_eheap_del_min_lt((this), oml_default_lt)
+
+/**
  * Remove an arbitrary element of the heap, through the iterator stored during a
  * oml_eheap_add() operation.
  * 
  * @note
  *   The corresponding iterator is not deallocated, but it is invalidated.
  */
-#define oml_eheap_del(this, p_it) ({ \
+#define oml_eheap_del_lt(this, p_it, op_key_lt) ({ \
   oml_rv __rv = OML_OK; \
   int _d_pos = (p_it)->pos, _d_pos2; \
   typeof((this)->elems[0].key) _d_key; \
@@ -219,17 +236,26 @@
     (this)->num_elems--; \
     if ((this)->num_elems == 0 || (this)->num_elems + 1 == _d_pos) \
       break; \
-    _d_pos2 = oml_eheap_push_down((this), _d_pos, _d_key); \
+    _d_pos2 = oml_eheap_push_down((this), _d_pos, _d_key, op_key_lt); \
     if (_d_pos2 == _d_pos) \
-      _d_pos2 = oml_eheap_push_up((this), _d_pos, _d_key); \
+      _d_pos2 = oml_eheap_push_up((this), _d_pos, _d_key, op_key_lt); \
     /* We use on purpose num_elems + 1, as we know it is legal */ \
     oml_eheap_nodecpy((this), _d_pos2, (this)->num_elems + 1); \
   } while (0); \
   __rv; \
 })
 
+/**
+ * Remove an arbitrary element of the heap, through the iterator stored during a
+ * oml_eheap_add() operation.
+ * 
+ * @note
+ *   The corresponding iterator is not deallocated, but it is invalidated.
+ */
+#define oml_eheap_del(this, p_it) oml_eheap_del_lt((this), (p_it), oml_default_lt)
+
 /** Return the current size of the heap */
-#define oml_eheap_size(this) (this)->num_elems
+#define oml_eheap_size(this) ((this)->num_elems)
 
 /**
  * Check if provided iterator is valid or has been invalidated.
@@ -268,4 +294,4 @@
   __rv; \
 })
 
-#endif /*OML_EHEAP_H_*/
+#endif /* __OML_EHEAP_H__ */
