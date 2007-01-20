@@ -10,9 +10,9 @@ static char *oml_errors[] = {
   "Inconsistent state",
   "System overload",
   "Internal error: report to authors, please",
-  "Server not found",
   "Full container",
-  "Empty container"
+  "Empty container",
+  "Element not found"
 };
 
 int oml_log_msg_id = 0;  /**< logging message identifier number */

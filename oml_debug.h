@@ -55,12 +55,12 @@ typedef struct oml_rv { } *oml_rv;
 #define OML_E_SYSTEM_OVERLOAD   oml_int_rv(-23)
   /** Internal error: report to authors, please                 */
 #define OML_E_INTERNAL_ERROR    oml_int_rv(-24)
-  /** Operation could not be completed because the reservation server could not be found */
-#define OML_E_NOSERVER  oml_int_rv(-25)
   /** Operation could not be completed because the object was "full" */
-#define OML_E_FULL oml_int_rv(-26)
+#define OML_E_FULL oml_int_rv(-25)
   /** Operation could not be completed because the object was "empty" */
-#define OML_E_EMPTY oml_int_rv(-27)
+#define OML_E_EMPTY oml_int_rv(-26)
+  /** Operation could not be completed because an element was not found */
+#define OML_E_NOT_FOUND oml_int_rv(-27)
 
 /** @} */
 
