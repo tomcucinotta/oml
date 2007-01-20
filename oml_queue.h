@@ -1,8 +1,6 @@
 #ifndef __OML_QUEUE_H__
 #define __OML_QUEUE_H__
 
-#include <malloc.h>
-
 /** @file
  *
  * @brief Implementation inline di una coda (FIFO) di valori di tipo
@@ -16,140 +14,179 @@
  * useful for debugging purposes.
  */
 
-/** Il tipo dei valori accodabili nella coda		*/
-typedef long oml_queue_elem_t;
+#include "oml_debug.h"
+#include "oml_malloc.h"
 
-/** Indica la corretta terminazione di una funzione	*/
-#define OK 0
-/** Indica un errore dovuto a mancanza di memoria	*/
-#define E_NO_MEMORY -1
+#define oml_define_queue(value_type) \
+  typedef struct oml_queue_##value_type { \
+    value_type *elems;    /**< Array of enqueued elems          */ \
+    int num_elems;        /**< Current number of enqueued elems */ \
+    int max_num_elems;    /**< Max number of enqueueable elems  */ \
+    /** Pos. in data[] of next elem to insert  */ \
+    int ins_pos; \
+    /** Pos. in data[] of next elem to extract */ \
+    int del_pos; \
+  } oml_queue_##value_type; \
+  typedef struct oml_queue_##value_type ##_iterator { \
+    /** Position of the elem to be returned by next oml_queue_next */ \
+    int pos; \
+    /** Number of times oml_queue_next() has been called */ \
+    int num_iterated; \
+  } oml_queue_##value_type ##_iterator
 
-/** Rappresentazione interna di una coda		*/
-typedef struct {
-  oml_queue_elem_t *data;	/**< Array di elementi accodati		*/
-  int num_elements;	/**< Numero di elementi accodati adesso	*/
-  int max_num_elements;	/**< Max numero di elementi accodabili	*/
-  /** Pos. in data[] del prox elemento da inserire	*/
-  int ins_pos;
-  /** Pos. in data[] del prox elemento da estrarre	*/
-  int del_pos;
-} oml_queue_t;
+/** Template-like type for a queue container */
+#define oml_queue(value_type) \
+  oml_queue_##value_type
 
-/** Inizializza una coda specificando il max. numero di elementi.
- *
- * @param queue		Puntatore all'oggetto oml_queue_t
- * @param max_num_elems	Max. numero di elementi accodabili
- *
- * @return OK oppure E_NO_MEMORY
- */
+/** Template-like type for a queue iterator.
+ ** 
+ ** Each iterator tolerates extraction of already iterated elems
+ ** and insertion of new elems during iteration.
+ **/
+#define oml_queue_iterator(value_type) \
+  oml_queue_##value_type ##_iterator
 
-static int queue_init(oml_queue_t *queue, int max_num_elems) {
-  queue->data = (oml_queue_elem_t *) malloc(sizeof(oml_queue_elem_t) * max_num_elems);
-  if (queue->data == 0)
-    return E_NO_MEMORY;
-  queue->num_elements = 0;
-  queue->max_num_elements = max_num_elems;
-  queue->ins_pos = queue->del_pos = 0;
-  return OK;
-}
+/** Initialize a queue specifying the max. number of enqueueable elements.
+ **
+ ** @param queue		Pointer to a oml_queue instance
+ ** @param max_num_elems	Max. number of enqueueable elements
+ **
+ ** @return OML_OK or OML_E_NO_MEMORY
+ **/
+#define oml_queue_init(this, N) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    (this)->elems = oml_malloc(sizeof((this)->elems[0]) * N); \
+    if ((this)->elems == NULL) { \
+      __rv = OML_E_NO_MEMORY; \
+      break; \
+    } \
+    (this)->max_num_elems = N; \
+    (this)->num_elems = 0; \
+    (this)->ins_pos = 0; \
+    (this)->del_pos = 0; \
+  } while (0); \
+  __rv; \
+})
 
 /** Distrugge una coda e le risorse associate	*/
-static void queue_cleanup(oml_queue_t *queue) {
-  free(queue->data);
-}
+#define oml_queue_cleanup(this) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    oml_free((this)->elems); \
+    (this)->elems = NULL; \
+  } while (0); \
+  __rv; \
+})
 
-/** Inserisce un elemento nella coda.
- *
- * Non chiamare questa funzione se la coda non e' stata inizializzata
- * o e' piena.
- */
-static void queue_insert(oml_queue_t *queue, oml_queue_elem_t elem) {
-  queue->data[queue->ins_pos] = elem;
-  queue->ins_pos = (queue->ins_pos + 1) % queue->max_num_elements;
-  queue->num_elements++;
-}
+/** Enqueue a value into the (tail of the) queue.
+ **
+ ** @return OML_OK or OML_E_FULL
+ **/
+#define oml_queue_push(this, value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((this)->num_elems == (this)->max_num_elems) { \
+      __rv = OML_E_FULL; \
+      break; \
+    } \
+    (this)->elems[(this)->ins_pos] = value; \
+    (this)->ins_pos = ((this)->ins_pos + 1) % (this)->max_num_elems; \
+    (this)->num_elems++; \
+  } while (0); \
+  __rv; \
+})
 
-/** Estrae un elemento dalla coda.
- *
- * Non chiamare questa funzione se la coda non e' stata inizializzata
- * o e' vuota.
- *
- * @return	L'elemento estratto.
- */
-static oml_queue_elem_t queue_extract(oml_queue_t *queue) {
- oml_queue_elem_t elem;
- elem = queue->data[queue->del_pos];
- queue->del_pos = (queue->del_pos + 1) % queue->max_num_elements;
- queue->num_elements--;
- return elem;
-}
+/** Read the value at the front of the queue, without removing it.
+ **
+ ** The element that is retrieved through this operation is the same
+ ** that would be extracted through a oml_queue_pop operation.
+ **
+ ** @param p_value
+ **   Pointer to a variable that will contain the read value,
+ **   or NULL if you don't need to know what has been extracted.
+ ** @return
+ **   OML_OK or OML_E_EMPTY
+ **/
+#define oml_queue_front(this, p_value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((this)->num_elems == 0) { \
+      __rv = OML_E_EMPTY; \
+      break; \
+    } \
+    if (p_value) \
+      *(p_value) = (this)->elems[(this)->del_pos]; \
+  } while (0); \
+  __rv; \
+})
 
-/** Restituisce il numero di elementi attualmente accodati.
- *
- * Non chiamare questa funzione se la coda non e' stata inizializzata.
- *
- * @return	Il numero di elementi attualmente in coda.
- */
-static int queue_get_num_elements(oml_queue_t *queue) {
-  return queue->num_elements;
-}
+/** Dequeue a value from (the front of) the queue and return it.
+ **
+ ** @param p_value
+ **   Pointer to a variable that will contain the popped element,
+ **   or NULL if you don't need to know what has been extracted.
+ **
+ ** @return
+ **   OML_OK or OML_E_EMPTY
+ **/
+#define oml_queue_pop(this, p_value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((this)->num_elems == 0) { \
+      __rv = OML_E_EMPTY; \
+      break; \
+    } \
+    if (p_value) \
+      *(p_value) = (this)->elems[(this)->del_pos]; \
+    (this)->del_pos = ((this)->del_pos + 1) % (this)->max_num_elems; \
+    (this)->num_elems--; \
+  } while (0); \
+  __rv; \
+})
 
-/** Restituisce il massimo numero di elementi accodabili.
- *
- * Non chiamare questa funzione se la coda non e' stata inizializzata.
- *
- * @return	Il max. numero di elementi accodabili.
- */
-static int queue_get_max_num_elements(oml_queue_t *queue) {
-  return queue->max_num_elements;
-}
+/** Return the number of values into the queue. **/
+#define oml_queue_size(this) ((this)->num_elems)
 
-/** Controlla se la coda e' vuota.
- *
- * Non chiamare questa funzione se la coda non e' stata inizializzata.
- *
- * @return	1 se la coda e' vuota, 0 altrimenti.
- */
-static int queue_is_empty(oml_queue_t *queue) {
-  return (queue->num_elements == 0 ? 1 : 0);
-}
+/** Check if the queue is empty. **/
+#define oml_queue_empty(this) ((this)->num_elems == 0)
 
-/** Controlla se la coda e' piena.
- *
- * Non chiamare questa funzione se la coda non e' stata inizializzata.
- *
- * @return	1 se la coda e' piena, 0 altrimenti.
- */
-static int queue_is_full(oml_queue_t *queue) {
-  return (queue->num_elements == queue->max_num_elements ? 1 : 0);
-}
+/** Check if the queue is full. **/
+#define oml_queue_full(this) ((this)->num_elems == (this)->max_num_elems)
 
-typedef struct {
-  oml_queue_t *queue;	/**< The oml_queue_t over which we are iterating */
-  int pos;		/**< when pos == queue->ins_pos, the position
-			 * is past the end */
-} queue_iterator_t;
+/* Queue Iterator */
 
 /** Get an iterator positioned on the first (earliest inserted)
- *  element of the queue */
-static queue_iterator_t queue_begin(oml_queue_t *this) {
-  queue_iterator_t qit = {
-    .queue = this,
-    .pos = this->del_pos
-  };
-  return qit;
-}
+ ** element of the queue, i.e. the earliest inserted element is
+ ** the first one to be returned by the very next oml_queue_next
+ ** call.
+ **/
+#define oml_queue_begin(this, p_it) \
+  do { \
+    (p_it)->pos = (this)->del_pos; \
+    (p_it)->num_iterated = 0; \
+  } while (0)
 
-/** Check if we may call queue_it_next() once again */
-static int queue_it_has_next(queue_iterator_t *this) {
-  return (this->pos != queue_get_num_elements(this->queue));
-}
+/** Check if we may call oml_queue_next() once again **/
+#define oml_queue_has_next(this, p_it) \
+  ( \
+    ((p_it)->pos != (this)->ins_pos) \
+    || (oml_queue_full(this) && (p_it)->num_iterated == 0) \
+  )
 
-/** Retrieve (without removing) next element from the queue */
-static oml_queue_elem_t queue_it_next(queue_iterator_t *this) {
-  oml_queue_elem_t value = this->queue->data[this->pos++];
-  this->pos = (this->pos + 1) % this->queue->max_num_elements;
-  return value;
-}
+/** Retrieve (without removing) the next element while iterating the queue */
+#define oml_queue_next(this, p_it, p_value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if (! oml_queue_has_next((this), (p_it))) { \
+      __rv = OML_E_NOT_FOUND; \
+      break; \
+    } \
+    *(p_value) = (this)->elems[(p_it)->pos]; \
+    (p_it)->pos = ((p_it)->pos + 1) % (this)->max_num_elems; \
+    (p_it)->num_iterated++; \
+  } while (0); \
+  __rv; \
+})
 
 #endif
