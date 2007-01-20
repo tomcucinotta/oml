@@ -10,21 +10,21 @@
 #include "oml_debug.h"
 
 #define oml_define_heap(key_type, value_type) \
-  typedef struct oml_heap_node_##key_type ##_##value_type ##_t { \
+  typedef struct oml_heap_node_##key_type ##_##value_type { \
     key_type key; \
     value_type value; \
-  } oml_heap_node_##key_type ##_##value_type ##_t; \
-  typedef struct oml_heap_##key_type ##_##value_type ##_t { \
+  } oml_heap_node_##key_type ##_##value_type; \
+  typedef struct oml_heap_##key_type ##_##value_type { \
     oml_heap_node_t(key_type, value_type) *elems; \
     int num_elems; \
     int max_num_elems; \
-  } oml_heap_##key_type ##_##value_type ##_t
+  } oml_heap_##key_type ##_##value_type
 
 #define oml_heap_node_t(key_type, value_type) \
-  struct oml_heap_node_##key_type ##_##value_type ##_t
+  struct oml_heap_node_##key_type ##_##value_type
 
 #define oml_heap_t(key_type, value_type) \
-  oml_heap_##key_type ##_##value_type ##_t
+  oml_heap_##key_type ##_##value_type
 
 #define oml_heap_init(this, N) ({ \
   int __rv = OML_OK; \
@@ -99,6 +99,6 @@
   __rv; \
 })
 
-#define oml_heap_size(this) (this)->num_elems
+#define oml_heap_size(this) ((this)->num_elems)
 
 #endif /*OML_HEAP_H_*/
