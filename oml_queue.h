@@ -189,4 +189,20 @@
   __rv; \
 })
 
+/** Retrieve the element that would be returned by the next call to oml_queue_next, if any.
+ **
+ ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
+ **/
+#define oml_queue_get(this, p_it, p_value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+     if (! oml_queue_has_next((this), (p_it))) { \
+       __rv = OML_E_NOT_FOUND; \
+       break; \
+     } \
+     *(p_value) = (this)->elems[(p_it)->pos]; \
+  } while (0); \
+  __rv; \
+})
+
 #endif
