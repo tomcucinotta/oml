@@ -1,0 +1,60 @@
+OPEN MACRO LIBRARY
+============================================================
+
+
+Description
+------------------------------------------------------------
+Open Macro Library is a library of highly reusable C macros providing
+a set of well-designed commonly needed functionality to C developers,
+like logging and debugging helpers, containers, sorting and other
+algorithms.
+
+Specifically, a simple to use API is planned to be designed and
+implemented that exposes to applications the following functionality:
+
+* containers: vector, queue, stack, list (standard, circular,
+  double-linked), tree (binary, binary double-linked), heap
+  (array-based and tree-based), quick-extraction heap, hashmap;
+* iterators;
+* synchronization primitives (monitors and condition variables);
+* synchronized containers: pthread-based wrappers for the above types;
+* algorithms: sorting, randomizing;
+* logging (configurable log levels and the sort);
+* debugging (memory allocation tracing, leakages detection);
+* exception handling;
+* OO typing (inheritance, support for associations);
+* serialization.
+
+
+License
+------------------------------------------------------------
+You can use this software under the terms of the GNU LGPL
+License. Check the LICENSE.TXT file within the distribution
+archive for details.
+
+
+Build
+------------------------------------------------------------
+Just type make, then make test if you want to run the automatic
+tests. No install procedure has been setup, so far.
+
+
+Support
+------------------------------------------------------------
+Just use the project mailing list on SoureForge. This is the
+subscription link:
+
+  http://sourceforge.net/mail/?group_id=186855
+
+
+Further information
+------------------------------------------------------------
+Check the project website: http://oml.sourceforge.net
+
+
+Note
+------------------------------------------------------------
+This archive has been created for the only purpose of easying
+the task to download OML, so that people may give a feedback
+on the design, syntax, etc. Actually, the current version is
+not yet complete and just a few types are actually complete.
