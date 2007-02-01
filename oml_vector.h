@@ -2,21 +2,22 @@
 #define __OML_VECTOR_H__
 
 /** @file
- *
- * @brief A generic vector, with optional bound checks.
- *
- * All vector operations are declared as static inline, and their
- * implementation is in the header file itself, so to allow the
- * compiler to optimize as much as possible. It is possible to enable
- * or disable various checks on the consistency of each opearation
- * with respect to the internal status of the vector object. This is
- * useful for debugging purposes.
- */
+ **
+ ** @brief A generic vector, with optional bound checks.
+ **
+ ** All vector operations are declared as static inline, and their
+ ** implementation is in the header file itself, so to allow the
+ ** compiler to optimize as much as possible. It is possible to enable
+ ** or disable various checks on the consistency of each opearation
+ ** with respect to the internal status of the vector object. This is
+ ** useful for debugging purposes.
+ **/
 
 #include "oml_debug.h"
 #include "oml_malloc.h"
 
 #define oml_define_vector(value_type) \
+  /** Array-based contained with optional bound checks **/ \
   typedef struct oml_vector_##value_type { \
     value_type *elems;    /**< Array of contained elems          */ \
     int num_elems;        /**< Current number of contained elems */ \
@@ -66,6 +67,16 @@
   do { \
     oml_free((this)->elems); \
     (this)->elems = NULL; \
+    (this)->num_elems = 0; \
+  } while (0); \
+  __rv; \
+})
+
+/** Clear a vector contents, so that it will become empty. */
+#define oml_vector_clear(this) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    (this)->num_elems = 0; \
   } while (0); \
   __rv; \
 })
@@ -213,6 +224,22 @@
       break; \
     } \
     (p_it)->pos--; \
+  } while (0); \
+  __rv; \
+})
+
+/** Retrieve the next element of a reverse iteration, if any.
+ **
+ ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
+ **/
+#define oml_vector_get_prev(this, p_it, p_value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+     if (! oml_vector_has_prev((this), (p_it))) { \
+       __rv = OML_E_NOT_FOUND; \
+       break; \
+     } \
+     *(p_value) = (this)->elems[(p_it)->pos - 1]; \
   } while (0); \
   __rv; \
 })

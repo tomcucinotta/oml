@@ -9,24 +9,24 @@
 
 #include "oml_debug.h"
 
-#define oml_dltree_instantiate(value_type) \
+#define oml_define_dltree(value_type) \
   typedef struct oml_dltree_node_##value_type ##_t { \
     value_type value; \
     struct oml_dltree_node_##value_type ##_t *p_father, *p_left_child, *p_right_child; \
   } oml_dltree_node_##value_type ##_t; \
   typedef oml_dltree_node_##value_type ##_t *oml_dltree_iterator_##value_type ##_t; \
   typedef struct oml_dltree_##key_type ##_##value_type ##_t { \
-    oml_heap_node_t(key_type, value_type) *p_root; \
+    oml_heap_node(key_type, value_type) *p_root; \
     int num_elems; \
   } oml_dltree_##key_type ##_##value_type ##_t
 
-#define oml_dltree_node_t(value_type) \
+#define oml_dltree_node(value_type) \
   oml_dltree_node_##value_type ##_t
 
-#define oml_dltree_iterator_t(value_type) \
+#define oml_dltree_iterator(value_type) \
   oml_dltree_iterator_##value_type ##_t
 
-#define oml_dltree_t(key_type, value_type) \
+#define oml_dltree(key_type, value_type) \
   oml_dltree_##key_type ##_##value_type ##_t
 
 #define oml_dltree_init(this) ({ \

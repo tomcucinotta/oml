@@ -19,31 +19,31 @@
 
 /** Rappresentazione interna di una FIFO thread-safe */
 typedef struct {
-  oml_queue_t q;		/**< La coda mono-thread di supporto	*/
-  pthread_mutex_t mutex;/**< Mutex per l'intera sync_oml_queue_t	*/
+  oml_vqueue q;		/**< La coda mono-thread di supporto	*/
+  pthread_mutex_t mutex;/**< Mutex per l'intera oml_sync_queue	*/
   /** Condition-Var che segnala la presenza di ulteriori elementi */
   pthread_cond_t more;
   /** Condition-Var che segnala la liberazione di ulteriori posti */
   pthread_cond_t less;
-} sync_oml_queue_t;
+} oml_sync_queue;
 
 /** Inizializza una FIFO thread-safe con uno specifico numero massimo
  * di elementi acFIFObili */
-void sync_queue_init(sync_oml_queue_t *sq, int num_elems) {
+void sync_queue_init(oml_sync_queue *sq, int num_elems) {
   queue_init(&sq->q, num_elems);
   pthread_cond_init(&sq->more, NULL);
   pthread_cond_init(&sq->less, NULL);
 }
 
 /** Distrugge una FIFO thread-safe liberando le risorse associate */
-void sync_queue_cleanup(sync_oml_queue_t *sq) {
+void sync_queue_cleanup(oml_sync_queue *sq) {
   pthread_cond_destroy(&sq->more);
   pthread_cond_destroy(&sq->less);
   queue_cleanup(&sq->q);
 }
 
 /** Inserisce un elemento nella FIFO, bloccandosi se e' gia' piena */
-void sync_queue_insert(sync_oml_queue_t *sq, char item) {
+void sync_queue_insert(oml_sync_queue *sq, char item) {
   pthread_mutex_lock(&sq->mutex);
 
   while (queue_is_full(&sq->q)) {
@@ -61,7 +61,7 @@ void sync_queue_insert(sync_oml_queue_t *sq, char item) {
 }
 
 /** Estrae un elemento dalla FIFO, bloccandosi se e' gia' vuota */
-char sync_queue_extract(sync_oml_queue_t *sq) {
+char sync_queue_extract(oml_sync_queue *sq) {
   char item;
   pthread_mutex_lock(&sq->mutex);
 

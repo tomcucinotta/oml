@@ -8,10 +8,10 @@
 
 #include "oml_vector.h"
 
-#define oml_define_vstack(value_type) oml_define_vstack(value_type)
+#define oml_define_vstack(value_type) oml_define_vector(value_type)
 
 /** Template-like type for a vstack container */
-#define oml_vstack(value_type) oml_vstack(value_type)
+#define oml_vstack(value_type) oml_vector(value_type)
 
 /** Template-like type for a vstack iterator.
  ** 

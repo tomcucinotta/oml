@@ -47,7 +47,7 @@ typedef struct oml_rv { } *oml_rv;
 #define OML_E_UNAUTHORIZED      oml_int_rv(-19)
   /** Operation is not (yet) implemented        */
 #define OML_E_UNIMPLEMENTED     oml_int_rv(-20)
-  /** Dynamic loadable component not found, e.g. kernel module  */
+  /** Dynamic loadable component not found.     */
 #define OML_E_MISSING_COMPONENT oml_int_rv(-21)
   /** Internal state inconsistent with operation                */
 #define OML_E_INCONSISTENT_STATE oml_int_rv(-22)
@@ -170,10 +170,6 @@ do {            \
 /** Log a verbose debugging message     */
 #define oml_log_verb(msg,args...) oml_log_str(OML_LEVEL_VERB, "<VRB> ",msg,##args)
 
-/** Log a variable. 
- *  Example: to print the long int variable "my_long_int" as a debug message  -> oml_log_var(OML_LEVEL_DEBUG, my_long_int, "%ld") */
-#define oml_log_var(level, __var_name, __var_type) oml_log(level, #__var_name ": " __var_type, __var_name)
-
 /** Log a critical error: always reported.      */
 #define oml_log_crit(msg,args...)                       \
 do {                                                    \
@@ -258,7 +254,7 @@ do {                                                    \
 } while (0)
 
 /** Check if debug is enabled for (at least) the specified level        */
-#define oml_debug_enabled_for(lev) (OML_DEBUG_LEVEL >= (lev))
+#define oml_log_enabled_for(lev) (OML_DEBUG_LEVEL >= (lev))
 
 /** Evaluate cond and log a custom message with args if it is not satisfied.
  * 
@@ -266,7 +262,7 @@ do {                                                    \
  * if the debug level is enabled for OML_LEVEL_DEBUG
  */
 #define oml_chk_if(cond,msg,args...) do {                       \
-  if (oml_debug_enabled_for(OML_LEVEL_DEBUG)) {                 \
+  if (oml_log_enabled_for(OML_LEVEL_DEBUG)) {                 \
     if (!(cond))                                                \
       oml_log_str(OML_LEVEL_WARN,   "<WRN> ",msg,##args)        \
   }                                                             \
@@ -291,8 +287,8 @@ do {                                                    \
   }                                                                     \
 } while (0)
 
-/** Evaluate expr and, if it does not evaluate to OML_OK, prints the
- *  stringified error and causes exit(-1).
+/** Evaluate expr and, if it does not evaluate to OML_OK, logs the
+ *  stringified error as critical and causes exit(-1).
  *
  * Only available in user-space */
 #define oml_chk_ok_exit(expr) do {                                      \
@@ -311,28 +307,11 @@ do {                                                    \
  * This check is only compiled if debug level is at least WARN.
  */
 #define oml_assert(cond) do {                                           \
-  if (oml_debug_enabled_for(OML_LEVEL_WARN)) {                 \
+  if (oml_log_enabled_for(OML_LEVEL_WARN)) {                 \
           int ok = (cond);                                                      \
           if (! ok) {                                                           \
             oml_log_err("ASSERTION FAILED: '" #cond "' at line %d of file %s.",\
                      __LINE__, __FILE__);                                       \
-            exit(-1);                                                           \
-          }                                                                     \
-  } \
-} while (0)
-
-/** Evaluate cond and cause exit(-1) if it is not satisfied.
- *
- * Only available in user-space.
- * 
- * This check is only compiled if debug level is at least WARN.
- */
-#define oml_assert_ok(expr) do {                                           \
-  if (oml_debug_enabled_for(OML_LEVEL_WARN)) {                 \
-          oml_rv __rv = (expr);                                                 \
-          if (__rv != OML_OK) {                                                 \
-            oml_log_crit("ASSERTION FAILED: '" #expr " = %s' at line %d of file %s.",\
-                     oml_strerror(__rv), __LINE__, __FILE__);                   \
             exit(-1);                                                           \
           }                                                                     \
   } \

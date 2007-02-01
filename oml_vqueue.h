@@ -1,59 +1,58 @@
-#ifndef __OML_QUEUE_H__
-#define __OML_QUEUE_H__
+#ifndef __OML_VQUEUE_H__
+#define __OML_VQUEUE_H__
 
 /** @file
  *
- * @brief Implementation inline di una coda (FIFO) di valori di tipo
- * oml_queue_elem_t.
+ * @brief Vector-based queue implementation.
  *
- * All queue operations are declared as static inline, and their
+ * All vqueue operations are declared as static inline, and their
  * implementation is in the header file itself, so to allow the
  * compiler to optimize as much as possible. It is possible to enable
  * or disable various checks on the consistency of each opearation
- * with respect to the internal status of the queue object. This is
+ * with respect to the internal status of the vqueue object. This is
  * useful for debugging purposes.
  */
 
 #include "oml_debug.h"
 #include "oml_malloc.h"
 
-#define oml_define_queue(value_type) \
-  typedef struct oml_queue_##value_type { \
-    value_type *elems;    /**< Array of enqueued elems          */ \
-    int num_elems;        /**< Current number of enqueued elems */ \
-    int max_num_elems;    /**< Max number of enqueueable elems  */ \
+#define oml_define_vqueue(value_type) \
+  typedef struct oml_vqueue_##value_type { \
+    value_type *elems;    /**< Array of envqueued elems          */ \
+    int num_elems;        /**< Current number of envqueued elems */ \
+    int max_num_elems;    /**< Max number of envqueueable elems  */ \
     /** Pos. in data[] of next elem to insert  */ \
     int ins_pos; \
     /** Pos. in data[] of next elem to extract */ \
     int del_pos; \
-  } oml_queue_##value_type; \
-  typedef struct oml_queue_##value_type ##_iterator { \
-    /** Position of the elem to be returned by next oml_queue_next */ \
+  } oml_vqueue_##value_type; \
+  typedef struct oml_vqueue_##value_type ##_iterator { \
+    /** Position of the elem to be returned by next oml_vqueue_next */ \
     int pos; \
-    /** Number of times oml_queue_next() has been called */ \
+    /** Number of times oml_vqueue_next() has been called */ \
     int num_iterated; \
-  } oml_queue_##value_type ##_iterator
+  } oml_vqueue_##value_type ##_iterator
 
-/** Template-like type for a queue container */
-#define oml_queue(value_type) \
-  oml_queue_##value_type
+/** Template-like type for a vqueue container */
+#define oml_vqueue(value_type) \
+  oml_vqueue_##value_type
 
-/** Template-like type for a queue iterator.
+/** Template-like type for a vqueue iterator.
  ** 
  ** Each iterator tolerates extraction of already iterated elems
  ** and insertion of new elems during iteration.
  **/
-#define oml_queue_iterator(value_type) \
-  oml_queue_##value_type ##_iterator
+#define oml_vqueue_iterator(value_type) \
+  oml_vqueue_##value_type ##_iterator
 
-/** Initialize a queue specifying the max. number of enqueueable elements.
+/** Initialize a vqueue specifying the max. number of envqueueable elements.
  **
- ** @param queue		Pointer to a oml_queue instance
- ** @param max_num_elems	Max. number of enqueueable elements
+ ** @param vqueue		Pointer to a oml_vqueue instance
+ ** @param max_num_elems	Max. number of envqueueable elements
  **
  ** @return OML_OK or OML_E_NO_MEMORY
  **/
-#define oml_queue_init(this, N) ({ \
+#define oml_vqueue_init(this, N) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     (this)->elems = oml_malloc(sizeof((this)->elems[0]) * N); \
@@ -70,7 +69,7 @@
 })
 
 /** Distrugge una coda e le risorse associate	*/
-#define oml_queue_cleanup(this) ({ \
+#define oml_vqueue_cleanup(this) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     oml_free((this)->elems); \
@@ -79,11 +78,11 @@
   __rv; \
 })
 
-/** Enqueue a value into the (tail of the) queue.
+/** Envqueue a value into the (tail of the) vqueue.
  **
  ** @return OML_OK or OML_E_FULL
  **/
-#define oml_queue_push(this, value) ({ \
+#define oml_vqueue_push(this, value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == (this)->max_num_elems) { \
@@ -97,10 +96,10 @@
   __rv; \
 })
 
-/** Read the value at the front of the queue, without removing it.
+/** Read the value at the front of the vqueue, without removing it.
  **
  ** The element that is retrieved through this operation is the same
- ** that would be extracted through a oml_queue_pop operation.
+ ** that would be extracted through a oml_vqueue_pop operation.
  **
  ** @param p_value
  **   Pointer to a variable that will contain the read value,
@@ -108,7 +107,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_queue_front(this, p_value) ({ \
+#define oml_vqueue_front(this, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
@@ -121,7 +120,7 @@
   __rv; \
 })
 
-/** Dequeue a value from (the front of) the queue and return it.
+/** Devqueue a value from (the front of) the vqueue and return it.
  **
  ** @param p_value
  **   Pointer to a variable that will contain the popped element,
@@ -130,7 +129,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_queue_pop(this, p_value) ({ \
+#define oml_vqueue_pop(this, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
@@ -145,40 +144,40 @@
   __rv; \
 })
 
-/** Return the number of values into the queue. **/
-#define oml_queue_size(this) ((this)->num_elems)
+/** Return the number of values into the vqueue. **/
+#define oml_vqueue_size(this) ((this)->num_elems)
 
-/** Check if the queue is empty. **/
-#define oml_queue_empty(this) ((this)->num_elems == 0)
+/** Check if the vqueue is empty. **/
+#define oml_vqueue_empty(this) ((this)->num_elems == 0)
 
-/** Check if the queue is full. **/
-#define oml_queue_full(this) ((this)->num_elems == (this)->max_num_elems)
+/** Check if the vqueue is full. **/
+#define oml_vqueue_full(this) ((this)->num_elems == (this)->max_num_elems)
 
-/* Queue Iterator */
+/* Vqueue Iterator */
 
 /** Get an iterator positioned on the first (earliest inserted)
- ** element of the queue, i.e. the earliest inserted element is
- ** the first one to be returned by the very next oml_queue_next
+ ** element of the vqueue, i.e. the earliest inserted element is
+ ** the first one to be returned by the very next oml_vqueue_next
  ** call.
  **/
-#define oml_queue_begin(this, p_it) \
+#define oml_vqueue_begin(this, p_it) \
   do { \
     (p_it)->pos = (this)->del_pos; \
     (p_it)->num_iterated = 0; \
   } while (0)
 
-/** Check if we may call oml_queue_next() once again **/
-#define oml_queue_has_next(this, p_it) \
+/** Check if we may call oml_vqueue_next() once again **/
+#define oml_vqueue_has_next(this, p_it) \
   ( \
     ((p_it)->pos != (this)->ins_pos) \
-    || (oml_queue_full(this) && (p_it)->num_iterated == 0) \
+    || (oml_vqueue_full(this) && (p_it)->num_iterated == 0) \
   )
 
-/** Retrieve (without removing) the next element while iterating the queue */
-#define oml_queue_next(this, p_it, p_value) ({ \
+/** Retrieve (without removing) the next element while iterating the vqueue */
+#define oml_vqueue_next(this, p_it, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-    if (! oml_queue_has_next((this), (p_it))) { \
+    if (! oml_vqueue_has_next((this), (p_it))) { \
       __rv = OML_E_NOT_FOUND; \
       break; \
     } \
@@ -189,14 +188,14 @@
   __rv; \
 })
 
-/** Retrieve the element that would be returned by the next call to oml_queue_next, if any.
+/** Retrieve the element that would be returned by the next call to oml_vqueue_next, if any.
  **
  ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
  **/
-#define oml_queue_get(this, p_it, p_value) ({ \
+#define oml_vqueue_get(this, p_it, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-     if (! oml_queue_has_next((this), (p_it))) { \
+     if (! oml_vqueue_has_next((this), (p_it))) { \
        __rv = OML_E_NOT_FOUND; \
        break; \
      } \
