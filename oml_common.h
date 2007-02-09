@@ -16,4 +16,8 @@
 #  define oml_default_lt(a, b) ((a) < (b))
 #endif
 
+#ifndef oml_default_eq
+#  define oml_default_eq(a, b) ((a) == (b))
+#endif
+
 #endif /*_OML_COMMON_H_ */
