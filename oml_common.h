@@ -1,6 +1,8 @@
 #ifndef _OML_COMMON_H_
 #define _OML_COMMON_H_
 
+#include <stdint.h>
+
 /**
  * All ordered data types in OML use this default macro in order
  * to compare sorting keys, unless the specific additional operations
@@ -18,6 +20,31 @@
 
 #ifndef oml_default_eq
 #  define oml_default_eq(a, b) ((a) == (b))
+#endif
+
+/** A quite good hash function (according to Wikipedia) **/
+static inline uint32_t joaat_hash_func(uint8_t *key, size_t len) {
+  uint32_t hash = 0;
+  size_t i;
+
+  for (i = 0; i < len; i++) {
+    hash += key[i];
+    hash += (hash << 10);
+    hash ^= (hash >> 6);
+  }
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+
+  return hash;
+}
+
+#ifndef oml_default_hash_func
+#  define oml_default_hash_func joaat_hash_func
+#endif
+
+#ifndef oml_default_hash
+#  define oml_default_hash(_key) oml_default_hash_func((uint8_t *) &(_key), sizeof(_key))
 #endif
 
 #endif /*_OML_COMMON_H_ */

@@ -40,6 +40,8 @@
 #define oml_vector_iterator(value_type) \
   oml_vector_##value_type ##_iterator
 
+#define oml_vector_value_type(this) typeof((this)->elems[0])
+
 /** Initialize a vector specifying the max. number of envectorable elements.
  **
  ** @param vector		Pointer to a oml_vector instance
@@ -156,7 +158,7 @@
 
 /** Get an iterator positioned on the first (earliest inserted)
  ** element of the vector, i.e. the earliest inserted element is
- ** the first one to be returned by the very next oml_vector_next
+ ** the first one to be returned by the very next oml_vector_get_next
  ** call.
  **/
 #define oml_vector_begin(this, p_it) ({ \
@@ -229,10 +231,21 @@
 
 /* REVERSE ITERATOR */
 
+/*
+for (it = v.begin(); it != v.end(); ++it)
+  cout << *it;
+
+it = v.end();
+while (it != v.begin()) {
+  --it;
+  cout << *it;
+}
+*/
+
 /** Get a reverse iterator positioned on the tail of the vector,
- ** i.e. the first element to be returned by the very next oml_vector_prev
- ** call is the same that would be returned with a forward iteration (made
- ** through oml_vector_begin / oml_vector_next.
+ ** i.e. the first element to be returned by the very next oml_vector_get_prev
+ ** call is the same that would be returned as last during a forward iteration
+ ** (made through oml_vector_begin / oml_vector_next).
  **/
 #define oml_vector_end(this, p_it) \
   do { \

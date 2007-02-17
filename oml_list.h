@@ -26,6 +26,8 @@
 #define oml_list_iterator(value_type) \
   oml_list_iterator_##value_type
 
+#define oml_list_value_type(this) typeof((this)->p_head->value)
+
 #define oml_list(value_type) \
   oml_list_##value_type
 
@@ -90,15 +92,33 @@
 
 #define oml_list_empty(this) ((this)->num_elems == 0)
 
+#define oml_list_clear(this) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    while ((this)->p_head != NULL) { \
+      typeof((this)->p_head) __p_node = (this)->p_head; \
+      (this)->p_head = (this)->p_head->p_next; \
+      oml_free(__p_node); \
+    } \
+    (this)->num_elems = 0; \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_list_cleanup(this) \
+  oml_list_clear(this)
 
 /* FORWARD ITERATOR */
 
 /** Get an iterator positioned on the head element
  **/
-#define oml_list_begin(this, p_it) \
+#define oml_list_begin(this, p_it) ({ \
+  oml_rv __rv = OML_OK; \
   do { \
     *(p_it) = (this)->p_head; \
-  } while (0)
+  } while (0); \
+  __rv; \
+})
 
 /** Check if we may call oml_list_next() once again **/
 #define oml_list_has_next(this, p_it) \
@@ -133,20 +153,24 @@
   __rv; \
 })
 
-#define oml_list_clear(this) ({ \
+/** Direct (L-assignable) reference to the value referenced by p_it.
+ **
+ ** @note If the iterator is not valid, behaviour is unspecified.
+ **/
+#define oml_list_value(this, p_it) ((*(p_it))->value)
+
+/** Get an iterator positioned past the last element
+ **/
+#define oml_list_end(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-    while ((this)->p_head != NULL) { \
-      typeof((this)->p_head) __p_node = (this)->p_head; \
-      (this)->p_head = (this)->p_head->p_next; \
-      oml_free(__p_node); \
-    } \
-    (this)->num_elems = 0; \
+    *(p_it) = NULL; \
   } while (0); \
   __rv; \
 })
 
-#define oml_list_cleanup(this) \
-  oml_list_clear(this)
+/** Check if the two iterators refer to the same position **/
+#define oml_list_iter_eq(this, p_it1, p_it2) \
+  ((*(p_it1)) == (*(p_it2)))
 
 #endif /* __OML_LIST_H__ */

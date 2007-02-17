@@ -27,7 +27,6 @@ int main(int argc, char **argv) {
     oml_vector_end(&h, &end);
     oml_log_debug("i=%d", i);
     oml_chk_ok_exit(oml_vector_find(&h, i, &it));
-    oml_log_debug("i=%d, pos=%d", i, it.pos);
     oml_chk_ok_exit(oml_vector_get_next(&h, &it, &v));
     oml_chk_exit(v == i);
   }
