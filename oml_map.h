@@ -1,17 +1,14 @@
 #ifndef __OML_MAP_H__
 #define __OML_MAP_H__
 
-/**
- * @file
- * 
- * @brief Generic array-based extraction-efficient min-map implementation.
- * 
- * @note If you need to compare keys with anything different from the operator
- * "<", then you should use the key_map_add_lt and key_map_del_lt versions
- * of the insert and remove operations, which support the name of the comparison
- * function or macro as further argument (look at oml_default_lt in oml_common.h
- * for details).
- */
+/** @file
+ ** 
+ ** @brief Generic hashmap.
+ ** 
+ ** @note
+ ** If you need to hash keys with anything different from the oml_default_hash()
+ ** function, then
+ **/
 
 #include "oml_debug.h"
 #include "oml_malloc.h"
@@ -52,6 +49,7 @@
 #define oml_map_init(this, N) ({ \
   oml_rv __rv = OML_OK; \
   do { \
+    int _pos; \
     (this)->elems = oml_malloc(sizeof((this)->elems[0]) << N); \
     if ((this)->elems == NULL) { \
       __rv = OML_E_NO_MEMORY; \
@@ -59,6 +57,8 @@
     } \
     (this)->max_num_elems = 1 << N; \
     (this)->num_elems = 0; \
+    for (_pos = 0; _pos < (this)->max_num_elems; _pos++) \
+      oml_list_init(&(this)->elems[_pos]);		 \
   } while (0); \
   __rv; \
 })
@@ -66,6 +66,9 @@
 #define oml_map_cleanup(this) ({ \
   oml_rv __rv = OML_OK; \
   do { \
+    int _pos; \
+    for (_pos = 0; _pos < (this)->max_num_elems; _pos++) \
+      oml_list_cleanup(&(this)->elems[_pos]);		 \
     oml_free((this)->elems); \
     (this)->num_elems = (this)->max_num_elems = 0; \
   } while (0); \
@@ -89,7 +92,7 @@
     if (__rv == OML_E_NOT_FOUND) { \
       typeof(oml_list_value(&((this)->elems[_a_pos]), &it)) _pair; \
       oml_pair_init(&_pair, _key, _value); \
-      __rv = oml_list_add_head(&((this)->elems[_a_pos]), _pair); \
+      __rv = oml_list_push_front(&((this)->elems[_a_pos]), _pair); \
       if (__rv != OML_OK) \
         break; \
       oml_list_begin(&((this)->elems[_a_pos]), &it); \
@@ -116,7 +119,7 @@
     
 /*   } while (0) */
 
-/* #define oml_map_has_next(this, p_it) \ */
+/* #define oml_map_has_value(this, p_it) \ */
 /*   ((p_it)->pos < (this)->num_elems) */
 
 /* #define oml_map_get_next(this, p_it, p_key, p_val) ({ \ */

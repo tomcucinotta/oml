@@ -36,7 +36,7 @@
  **
  ** @return OML_OK or OML_E_FULL
  **/
-#define oml_vstack_push(this, value) oml_vector_push(this, value)
+#define oml_vstack_push(this, value) oml_vector_push_back(this, value)
 
 /** Read from the vstack the last pushed value, without removing it.
  **
@@ -80,7 +80,7 @@
 #define oml_vstack_begin(this, p_it) oml_vector_end((this), (p_it))
 
 /** Check if we may call oml_vstack_next() once again **/
-#define oml_vstack_has_next(this, p_it) oml_vector_has_prev((this), (p_it))
+#define oml_vstack_has_value(this, p_it) oml_vector_has_value((this), (p_it))
 
 /** Move the iterator one element down the vstack. */
 #define oml_vstack_next(this, p_it) oml_vector_prev((this), (p_it))
@@ -89,6 +89,6 @@
  **
  ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
  **/
-#define oml_vstack_get_next(this, p_it, p_value) oml_vector_get_prev((this), (p_it), (p_value))
+#define oml_vstack_value(this, p_it) oml_vector_value((this), (p_it))
 
 #endif

@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 
   printf("VStack dump:\n");
   oml_lstack_begin(&h, &it);
-  for (; oml_lstack_has_next(&h, &it); oml_lstack_next(&h, &it)) {
+  for (; oml_lstack_has_value(&h, &it); oml_lstack_next(&h, &it)) {
     oml_chk_ok_exit(oml_lstack_get_next(&h, &it, &v));
     printf("  List elem: %d\n", v);
   }

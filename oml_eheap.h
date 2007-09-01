@@ -276,7 +276,7 @@
     (p_it)->pos = 0; \
   } while (0)
 
-#define oml_eheap_has_next(this, p_it) \
+#define oml_eheap_has_value(this, p_it) \
   ((p_it)->pos < (this)->num_elems)
 
 #define oml_eheap_next(this, p_it, p_key, p_val) ({ \

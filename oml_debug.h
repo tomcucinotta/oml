@@ -248,8 +248,24 @@ do {                                                    \
  */
 #define oml_chk_go(cond,lab,msg,args...) do {                   \
   if (!(cond)) {                                                \
-    oml_log_str(OML_LEVEL_WARN,   "<WRN> ",msg,##args);         \
+    oml_log_warn(msg,##args);					\
     goto lab;                                                   \
+  }                                                             \
+} while (0)
+
+/** Evaluate cond and, if not satisfied, log a warning and run a statement.
+ **
+ ** Statement is wrapped within a do..while(0), so the break statement does
+ ** not work as expected.
+ **
+ ** @note
+ ** Condition is always evaluated, independently of debug settings.
+ **/
+#define oml_chk_do(cond,stmt) do {				\
+  if (!(cond)) {                                                \
+    oml_log_warn("Check failed: '" #cond                        \
+      "' at line %d of file %s.", __LINE__, __FILE__);          \
+    stmt;	                                                \
   }                                                             \
 } while (0)
 

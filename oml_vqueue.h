@@ -167,7 +167,7 @@
   } while (0)
 
 /** Check if we may call oml_vqueue_next() once again **/
-#define oml_vqueue_has_next(this, p_it) \
+#define oml_vqueue_has_value(this, p_it) \
   ( \
     ((p_it)->pos != (this)->ins_pos) \
     || (oml_vqueue_full(this) && (p_it)->num_iterated == 0) \
@@ -177,7 +177,7 @@
 #define oml_vqueue_next(this, p_it, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-    if (! oml_vqueue_has_next((this), (p_it))) { \
+    if (! oml_vqueue_has_value((this), (p_it))) { \
       __rv = OML_E_NOT_FOUND; \
       break; \
     } \
@@ -195,7 +195,7 @@
 #define oml_vqueue_get(this, p_it, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-     if (! oml_vqueue_has_next((this), (p_it))) { \
+     if (! oml_vqueue_has_value((this), (p_it))) { \
        __rv = OML_E_NOT_FOUND; \
        break; \
      } \

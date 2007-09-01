@@ -32,7 +32,7 @@
   } oml_svector_##value_type ##_##size ##_iterator
 
 /** Template-like type for a vector container */
-#define oml_svector(value_type) \
+#define oml_svector(value_type, size) \
   oml_svector_##value_type ##_##size
 
 /** Template-like type for a vector iterator.
@@ -40,7 +40,7 @@
  ** Each iterator tolerates extraction of already iterated elems
  ** and insertion of new elems during iteration.
  **/
-#define oml_svector_iterator(value_type) \
+#define oml_svector_iterator(value_type, size) \
   oml_svector_##value_type ##_##size ##_iterator
 
 /** Initialize a vector specifying the max. number of envectorable elements.
@@ -62,8 +62,6 @@
 #define oml_svector_cleanup(this) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-    oml_free((this)->elems); \
-    (this)->elems = NULL; \
     (this)->num_elems = 0; \
   } while (0); \
   __rv; \
@@ -82,7 +80,7 @@
  **
  ** @return OML_OK or OML_E_FULL
  **/
-#define oml_svector_push(this, value) ({ \
+#define oml_svector_push_back(this, value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == (this)->max_num_elems) { \
@@ -90,6 +88,29 @@
       break; \
     } \
     (this)->elems[(this)->num_elems] = value; \
+    (this)->num_elems++; \
+  } while (0); \
+  __rv; \
+})
+
+/** Add a value at the begin of the vector.
+ **
+ ** After the insertion operation, the very first element
+ ** a forward iteration retrieves is the just inserted one.
+ **
+ ** @return OML_OK or OML_E_FULL
+ **/
+#define oml_svector_push_front(this, _value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    int _pos; \
+    if ((this)->num_elems == (this)->max_num_elems) { \
+      __rv = OML_E_FULL; \
+      break; \
+    } \
+    for (_pos = (this)->num_elems; _pos > 0; --_pos) \
+      (this)->elems[_pos] = (this)->elems[_pos - 1]; \
+    (this)->elems[0] = _value; \
     (this)->num_elems++; \
   } while (0); \
   __rv; \
@@ -156,20 +177,23 @@
  ** the first one to be returned by the very next oml_svector_next
  ** call.
  **/
-#define oml_svector_begin(this, p_it) \
+#define oml_svector_begin(this, p_it) ({ \
+  oml_rv __rv = OML_OK; \
   do { \
     (p_it)->pos = 0; \
-  } while (0)
+  } while (0); \
+  __rv; \
+})
 
 /** Check if we may call oml_svector_next() once again **/
-#define oml_svector_has_next(this, p_it) \
-  ((p_it)->pos != (this)->num_elems))
+#define oml_svector_has_value(this, p_it) \
+  ((p_it)->pos != (this)->num_elems)
 
 /** Move the iterator one element forward. */
 #define oml_svector_next(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-    if (! oml_svector_has_next((this), (p_it))) { \
+    if (! oml_svector_has_value((this), (p_it))) { \
       __rv = OML_E_NOT_FOUND; \
       break; \
     } \
@@ -182,17 +206,7 @@
  **
  ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
  **/
-#define oml_svector_get_next(this, p_it, p_value) ({ \
-  oml_rv __rv = OML_OK; \
-  do { \
-     if (! oml_svector_has_next((this), (p_it))) { \
-       __rv = OML_E_NOT_FOUND; \
-       break; \
-     } \
-     *(p_value) = (this)->elems[(p_it)->pos]; \
-  } while (0); \
-  __rv; \
-})
+#define oml_svector_value(this, p_it) ((this)->elems[(p_it)->pos])
 
 /* REVERSE ITERATOR */
 
@@ -205,6 +219,10 @@
   do { \
     (p_it)->pos = (this)->num_elems; \
   } while (0)
+
+/** Check if the two iterators refer to the same position **/
+#define oml_svector_iter_eq(this, p_it1, p_it2) \
+  ((p_it1)->pos == (p_it2)->pos)
 
 /** Check if we may call oml_svector_prev() once again **/
 #define oml_svector_has_prev(this, p_it) \

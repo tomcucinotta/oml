@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
   oml_chk_ok_exit(oml_vector_init(&h, SIZE));
   for (i = 0; i < SIZE; ++i)
-    oml_chk_ok_exit(oml_vector_push(&h, i));
+    oml_chk_ok_exit(oml_vector_push_back(&h, i));
 
   for (i = 0; i < SIZE; ++i) {
     int v = -1;
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     oml_vector_end(&h, &end);
     oml_log_debug("i=%d", i);
     oml_chk_ok_exit(oml_vector_find(&h, i, &it));
-    oml_chk_ok_exit(oml_vector_get_next(&h, &it, &v));
+    v = oml_vector_value(&h, &it);
     oml_chk_exit(v == i);
   }
 
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     oml_log_debug("Searching for %d", i);
     oml_chk_ok_exit(oml_vector_find_in(&h, i, &it, &end));
     oml_log_debug("Finished");
-    oml_chk_ok_exit(oml_vector_get_next(&h, &it, &v));
+    v = oml_vector_value(&h, &it);
     oml_chk_exit(v == i);
   }
 

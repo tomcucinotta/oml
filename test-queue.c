@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
   oml_vqueue_begin(&h, &it);
 
   printf("Heap dump:\n");
-  while (oml_vqueue_has_next(&h, &it)) {
+  while (oml_vqueue_has_value(&h, &it)) {
     oml_chk_ok_exit(oml_vqueue_next(&h, &it, &v));
     printf("  Queue elem: %d\n", v);
   }

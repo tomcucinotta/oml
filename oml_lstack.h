@@ -35,7 +35,7 @@
  **
  ** @return OML_OK or OML_E_FULL
  **/
-#define oml_lstack_push(this, value) oml_list_add_head((this), (value))
+#define oml_lstack_push(this, value) oml_list_push_front((this), (value))
 
 /** Read from the lstack the last pushed value, without removing it.
  **
@@ -48,7 +48,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_lstack_front(this, p_value) oml_list_head((this), (p_value))
+#define oml_lstack_front(this, p_value) oml_list_front((this), (p_value))
 
 /** Pop from the lstack the last pushed value and return it.
  **
@@ -59,7 +59,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_lstack_pop(this) oml_list_del_head(this)
+#define oml_lstack_pop(this) oml_list_pop_front(this)
 
 /** Return the number of values into the lstack. **/
 #define oml_lstack_size(this) oml_list_size(this)
@@ -76,7 +76,7 @@
 #define oml_lstack_begin(this, p_it) oml_list_begin((this), (p_it))
 
 /** Check if we may call oml_lstack_next() once again **/
-#define oml_lstack_has_next(this, p_it) oml_list_has_next((this), (p_it))
+#define oml_lstack_has_value(this, p_it) oml_list_has_value((this), (p_it))
 
 /** Move the iterator one element down the lstack. */
 #define oml_lstack_next(this, p_it) oml_list_next((this), (p_it))

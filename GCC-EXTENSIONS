@@ -1,0 +1,64 @@
+GCC Extensions used within OML
+============================================================
+Variadic macros allow to define printf-like macros with the
+ability to dump the calling function name, file name and
+line number from within the macro.
+
+The typeof() operator is used a lot in order to allow to
+write macros that are able to work with variables of
+different type. Also, it is useful to define macro-local
+variables where to copy macro args, thus avoiding multiple
+evaluation that is usually dangerous when there are side
+effects in the macro argument expressions.
+
+The __builtin_apply_arg() and __builtin_apply() functions
+are used in helper macros for declaring functions. These
+are useful to insert arbitrary code before the function
+call and after the function returns, e.g. for logging,
+benchmarking or synchronisation purposes.
+
+The __builtin_frame_address() function might be useful
+with the two builtin functions cited above for computing
+the stack-size of the function arguments, thus avoiding
+the waste of a fixed amount of bytes into the stack for
+wrappers.
+
+The nested functions extension to the C language should
+be useful to declare synchronised blocks of code.
+
+The __builtin_types_compatible_p() function may be used
+to emulate overriding of functions with same number of
+args but different types. The function should actually be
+a macro where the __builtin_types_compatible_p(), along
+with typeof(), discriminate among various types of a
+given argument.
+
+The unnamed structure feature allows, in the context of
+OO-like macros, the operations of a child class to access
+the fields of the parent class without the need to
+explicitly go through the father field. This is useful
+when the child does not want to deal with how many levels
+in the hierarchy it needs to go up, in order to find the
+field.
+
+The weak attribute on variables and functions could allow
+distribution of OML as a pure set of (completely portable)
+include files, that do not need any compilation process
+in order to be made available onto a machine. This would
+avoid the burden of building and distributing compiled
+libraries for different architectures, and it also would
+allow to a programmer to use OML by customising only the
+include path, without any need to customise also the
+library path and used libraries. Warning: this slows
+down compilation and linking processes, and adds the
+risk of accidental override of a library symbol by the
+application program, that almost certainly leads to
+hardly debuggable bugs.
+
+[ To be removed
+The transparent_union type attribute could be used to allow
+overriding of functions with same name. I'm not sure, yet,
+you can define the function and call it, but I'm missing
+some compile-time trick from within the function in order
+to discriminate among the actual type it was called with.
+]

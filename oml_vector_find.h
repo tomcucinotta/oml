@@ -7,10 +7,10 @@
 #define oml_vector_find_in_eq(this, value, p_it, p_end, f_eq) ({ \
   oml_rv __rv = OML_E_NOT_FOUND; \
   typeof(value) __value = (value); \
-  while (oml_vector_has_next((this), (p_it)) \
+  while (oml_vector_has_value((this), (p_it)) \
          && ! oml_vector_iter_eq((this), (p_it), (p_end))) { \
     typeof(value) __val; \
-    oml_vector_get_next((this), (p_it), &__val); \
+    __val = oml_vector_value((this), (p_it)); \
     if (f_eq(__val, __value)) { \
       __rv = OML_OK; \
       break; \
@@ -27,11 +27,11 @@
   oml_rv __rv = OML_E_NOT_FOUND; \
   typeof(value) __value = (value); \
   for (oml_vector_begin((this), (p_it)); \
-       oml_vector_has_next((this), (p_it)); \
+       oml_vector_has_value((this), (p_it)); \
        oml_vector_next((this), (p_it)) \
   ) { \
     typeof(value) __val; \
-    oml_vector_get_next((this), (p_it), &__val); \
+    __val = oml_vector_value((this), (p_it)); \
     if (f_eq(__val, __value)) { \
       __rv = OML_OK; \
       break; \
@@ -44,11 +44,11 @@
   oml_rv __rv = OML_E_NOT_FOUND; \
   typeof(value) __value = (value); \
   for (oml_vector_begin((this), (p_it)); \
-       oml_vector_has_next((this), (p_it)); \
+       oml_vector_has_value((this), (p_it)); \
        oml_vector_next((this), (p_it)) \
   ) { \
     oml_vector_value_type(this) __val; \
-    oml_vector_get_next((this), (p_it), &__val); \
+    __val = oml_vector_value((this), (p_it)); \
     if (f_eq(__val, __value, f_eq_param)) { \
       __rv = OML_OK; \
       break; \

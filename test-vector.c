@@ -5,21 +5,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-oml_define_vector(int);
-
-oml_vector(int) h;
-
 #define SIZE 4
+#define value_type int
+#include "test-vector-factory.h"
+
+container_type h;
+
 int values[SIZE];
 
 int main(int argc, char **argv) {
   int v;
 
-  oml_chk_ok_exit(oml_vector_init(&h, SIZE));
+  oml_chk_ok_exit(test_vector_init(&h));
 
   printf("Size of vector: %d\n", oml_vector_size(&h));
   oml_chk_exit(oml_vector_size(&h) == 0);
-  oml_chk_ok_exit(oml_vector_push(&h, 1024));
+  oml_chk_ok_exit(oml_vector_push_back(&h, 1024));
   printf("Size of vector: %d\n", oml_vector_size(&h));
   oml_chk_exit(oml_vector_size(&h) == 1);
   oml_chk_exit(oml_vector_front(&h, &v) == OML_OK && v == 1024);
@@ -29,10 +30,10 @@ int main(int argc, char **argv) {
   oml_chk_exit(oml_vector_size(&h) == 0);
   oml_chk_exit(oml_vector_empty(&h));
 
-  oml_chk_ok_exit(oml_vector_push(&h, 4));
-  oml_chk_ok_exit(oml_vector_push(&h, 7));
-  oml_chk_ok_exit(oml_vector_push(&h, 1));
-  oml_chk_ok_exit(oml_vector_push(&h, 3));
+  oml_chk_ok_exit(oml_vector_push_back(&h, 4));
+  oml_chk_ok_exit(oml_vector_push_back(&h, 7));
+  oml_chk_ok_exit(oml_vector_push_back(&h, 1));
+  oml_chk_ok_exit(oml_vector_push_back(&h, 3));
   printf("Size of vector: %d\n", oml_vector_size(&h));
   oml_chk_exit(oml_vector_size(&h) == 4);
 
@@ -54,12 +55,12 @@ int main(int argc, char **argv) {
   }
 
   int i;
-  oml_vector_iterator(int) it;
+  iterator_type it;
 
   for (i = 0; i < SIZE; ++i) {
     values[i] = rand();
     printf("Inserting %d\n", values[i]);
-    oml_chk_ok_exit(oml_vector_push(&h, values[i]));
+    oml_chk_ok_exit(oml_vector_push_back(&h, values[i]));
   }
 
   oml_chk_exit(oml_vector_size(&h) == SIZE);
@@ -67,8 +68,8 @@ int main(int argc, char **argv) {
 
   printf("Vector dump:\n");
   oml_vector_begin(&h, &it);
-  for (; oml_vector_has_next(&h, &it); oml_vector_next(&h, &it)) {
-    oml_chk_ok_exit(oml_vector_get_next(&h, &it, &v));
+  for (; oml_vector_has_value(&h, &it); oml_vector_next(&h, &it)) {
+    v = oml_vector_value(&h, &it);
     printf("  List elem: %d\n", v);
   }
 

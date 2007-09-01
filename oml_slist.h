@@ -17,7 +17,6 @@
   typedef oml_list_node_##value_type *oml_list_iterator_##value_type; \
   typedef struct oml_list_##value_type { \
     oml_list_node(value_type) *p_head; /* First list node */ \
-    oml_list_node(value_type) *p_tail; /* Last list node */ \
     int num_elems; \
   } oml_list_##value_type
 
@@ -36,15 +35,14 @@
   oml_rv __rv = OML_OK; \
   do { \
     (this)->p_head = NULL; \
-    (this)->p_tail = NULL; \
     (this)->num_elems = 0; \
   } while (0); \
   __rv; \
 })
 
+/** Inserts _value in place of *it, pushing *it at the left child of _value */
 #define oml_list_push_front(this, _value) ({ \
   oml_rv __rv = OML_OK; \
-  typeof(_value) __value = (_value);	\
   do { \
     typeof((this)->p_head) __p_node = oml_malloc(sizeof(typeof(*(this)->p_head))); \
     if (__p_node == NULL) { \
@@ -52,32 +50,8 @@
       break; \
     } \
     __p_node->p_next = (this)->p_head; \
-    __p_node->value = __value; \
+    __p_node->value = (_value); \
     (this)->p_head = __p_node; \
-    if ((this)->p_tail == NULL) \
-      (this)->p_tail = __p_node; \
-    (this)->num_elems++; \
-  } while (0); \
-  __rv; \
-})
-
-#define oml_list_push_back(this, _value) ({ \
-  oml_rv __rv = OML_OK; \
-  typeof(_value) __value = (_value);		\
-  do { \
-    typeof((this)->p_head) __p_node = oml_malloc(sizeof(typeof(*(this)->p_head))); \
-    if (__p_node == NULL) { \
-      __rv = OML_E_NO_MEMORY; \
-      break; \
-    } \
-    __p_node->value = __value; \
-    __p_node->p_next = NULL; \
-    if ((this)->p_head == NULL) { \
-      (this)->p_head = __p_node; \
-    } else { \
-      (this)->p_tail->p_next = __p_node; \
-    } \
-    (this)->p_tail = __p_node; \
     (this)->num_elems++; \
   } while (0); \
   __rv; \
@@ -108,8 +82,6 @@
     } \
     __p_node = (this)->p_head; \
     (this)->p_head = __p_node->p_next; \
-    if ((this)->p_tail == __p_node) \
-      (this)->p_tail = NULL; \
     (this)->num_elems--; \
     oml_free(__p_node); \
   } while (0); \
@@ -128,7 +100,6 @@
       (this)->p_head = (this)->p_head->p_next; \
       oml_free(__p_node); \
     } \
-    (this)->p_tail = NULL; \
     (this)->num_elems = 0; \
   } while (0); \
   __rv; \
@@ -149,7 +120,7 @@
   __rv; \
 })
 
-/** Check if the iterator is dereferenceable (i.e. we may call oml_list_get() or oml_list_value()). **/
+/** Check if we may call oml_list_next() once again **/
 #define oml_list_has_value(this, p_it) \
   (*(p_it) != NULL)
 
@@ -166,11 +137,11 @@
   __rv; \
 })
 
-/** Retrieve and store in p_value the element referenced to by the iterator p_it.
+/** Retrieve the next element of a forward iteration, if any.
  **
- ** @return OML_E_NOT_FOUND if the iterator is past the last element in the list.
+ ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
  **/
-#define oml_list_get(this, p_it, p_value) ({ \
+#define oml_list_get_next(this, p_it, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if (! oml_list_has_value((this), (p_it))) { \
@@ -188,7 +159,8 @@
  **/
 #define oml_list_value(this, p_it) ((*(p_it))->value)
 
-/** Get an iterator positioned past the last element. **/
+/** Get an iterator positioned past the last element
+ **/
 #define oml_list_end(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
@@ -200,9 +172,5 @@
 /** Check if the two iterators refer to the same position **/
 #define oml_list_iter_eq(this, p_it1, p_it2) \
   ((*(p_it1)) == (*(p_it2)))
-
-/** Let the supplied iterator iterate over the entire collection **/
-#define oml_list_foreach(this, p_it)	\
-  for (oml_list_begin(this, p_it); oml_list_has_value(this, p_it); oml_list_next(this, p_it))
 
 #endif /* __OML_LIST_H__ */

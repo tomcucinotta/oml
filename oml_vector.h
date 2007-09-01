@@ -83,11 +83,14 @@
   __rv; \
 })
 
-/** Add a value into the (tail of the) vector.
+/** Add a value at the end of the vector.
+ **
+ ** After the insertion operation, the very last element
+ ** a forward iteration retrieves is the just inserted one.
  **
  ** @return OML_OK or OML_E_FULL
  **/
-#define oml_vector_push(this, value) ({ \
+#define oml_vector_push_back(this, value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == (this)->max_num_elems) { \
@@ -100,10 +103,30 @@
   __rv; \
 })
 
-/** Read the value at the front of the vector, without removing it.
+/** Add a value at the begin of the vector.
  **
- ** The element that is retrieved through this operation is the same
- ** that would be extracted through a oml_vector_pop operation.
+ ** After the insertion operation, the very first element
+ ** a forward iteration retrieves is the just inserted one.
+ **
+ ** @return OML_OK or OML_E_FULL
+ **/
+#define oml_vector_push_front(this, _value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    int _pos; \
+    if ((this)->num_elems == (this)->max_num_elems) { \
+      __rv = OML_E_FULL; \
+      break; \
+    } \
+    for (_pos = (this)->num_elems; _pos > 0; --_pos) \
+      (this)->elems[_pos] = (this)->elems[_pos - 1]; \
+    (this)->elems[0] = _value; \
+    (this)->num_elems++; \
+  } while (0); \
+  __rv; \
+})
+
+/** Read the value at the end of the vector, without removing it.
  **
  ** @param p_value
  **   Pointer to a variable that will contain the read value,
@@ -111,7 +134,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_vector_front(this, p_value) ({ \
+#define oml_vector_back(this, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
@@ -133,7 +156,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_vector_pop(this) ({ \
+#define oml_vector_pop_back(this) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
@@ -169,16 +192,24 @@
   __rv; \
 })
 
-/** Check if we may call oml_vector_next() once again **/
-#define oml_vector_has_next(this, p_it) \
-  ((p_it)->pos != (this)->num_elems)
+/** Check if we may call oml_vector_value() **/
+#define oml_vector_has_value(this, p_it) \
+  (((p_it)->pos >= 0) && ((p_it)->pos < (this)->num_elems))
+
+/** Check if iterator is at end (past the last element) **/
+#define oml_vector_at_end(this, p_it) \
+  ((p_it)->pos == (this)->num_elems)
+
+/** Check if iterator is at begin (on the first element or no-valued) **/
+#define oml_vector_at_begin(this, p_it) \
+  ((p_it)->pos == 0)
 
 /** Move the iterator one element forward. */
 #define oml_vector_next(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     oml_log_debug("pos: %d", (p_it)->pos); \
-    if (! oml_vector_has_next((this), (p_it))) { \
+    if (! oml_vector_has_value((this), (p_it))) { \
       __rv = OML_E_NOT_FOUND; \
       break; \
     } \
@@ -192,27 +223,16 @@
  **
  ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
  **/
-#define oml_vector_get_next(this, p_it, p_value) ({ \
-  oml_rv __rv = OML_OK; \
-  do { \
-     if (! oml_vector_has_next((this), (p_it))) { \
-       __rv = OML_E_NOT_FOUND; \
-       break; \
-     } \
-     *(p_value) = (this)->elems[(p_it)->pos]; \
-  } while (0); \
-  __rv; \
-})
+#define oml_vector_value(this, p_it) ((this)->elems[(p_it)->pos])
 
 /** Insert an element at the specified position in the vector.
  **
  ** All elements in the vector, including the one that would
- ** be returned through oml_vector_get_next before the insertion,
+ ** be returned through oml_vector_value() before the insertion,
  ** are shifted one position forward in the vector.
- ** After the insertion operation, an iteration up to the end
- ** through oml_vector_get_next, starting from the provided
- ** iterator, would retrieve the just inserted element
- ** first, then all the other elements.
+ ** After the insertion operation, an iteration up to the end,
+ ** through the same iterator, would retrieve the just inserted
+ ** element first, then all the remaining elements.
  **/
 #define oml_vector_insert(this, p_it, value) ({ \
   oml_rv __rv = OML_OK; \
@@ -235,11 +255,32 @@
 for (it = v.begin(); it != v.end(); ++it)
   cout << *it;
 
+for (oml_vector_begin(&c, &it);
+     ! oml_vector_at_end(&c, &it); // or has_value (less efficient)
+     oml_vector_next(&c, &it))
+  printf("%d", oml_vector_value(&c, &it));
+
 it = v.end();
 while (it != v.begin()) {
   --it;
   cout << *it;
 }
+
+oml_vector_end(&c, &it);
+oml_vector_begin(&c, &begin);
+while (oml_vector_iter_ne(&c, &it, &begin)) {
+  oml_vector_prev(&c, &it);
+  printf("%d", oml_vector_value(&c, &it));
+}
+
+// Shorthand:
+
+oml_vector_end(&c, &it);
+while (! oml_vector_at_begin(&c, &it, &begin)) {
+  oml_vector_prev(&c, &it);
+  printf("%d", oml_vector_value(&c, &it));
+}
+
 */
 
 /** Get a reverse iterator positioned on the tail of the vector,
@@ -252,10 +293,6 @@ while (it != v.begin()) {
     (p_it)->pos = (this)->num_elems; \
   } while (0)
 
-/** Check if we may call oml_vector_prev() once again **/
-#define oml_vector_has_prev(this, p_it) \
-  ((p_it)->pos != 0)
-
 /** Check if the two iterators refer to the same position **/
 #define oml_vector_iter_eq(this, p_it1, p_it2) \
   ((p_it1)->pos == (p_it2)->pos)
@@ -266,27 +303,11 @@ while (it != v.begin()) {
 #define oml_vector_prev(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
-    if (! oml_vector_has_prev((this), (p_it))) { \
+    if (! oml_vector_has_value((this), (p_it))) { \
       __rv = OML_E_NOT_FOUND; \
       break; \
     } \
     (p_it)->pos--; \
-  } while (0); \
-  __rv; \
-})
-
-/** Retrieve the next element of a reverse iteration, if any.
- **
- ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
- **/
-#define oml_vector_get_prev(this, p_it, p_value) ({ \
-  oml_rv __rv = OML_OK; \
-  do { \
-     if (! oml_vector_has_prev((this), (p_it))) { \
-       __rv = OML_E_NOT_FOUND; \
-       break; \
-     } \
-     *(p_value) = (this)->elems[(p_it)->pos - 1]; \
   } while (0); \
   __rv; \
 })
@@ -304,7 +325,7 @@ while (it != v.begin()) {
  ** this operation equivalent to oml_vector_begin. Providing oml_vector_size(this)
  ** makes this operation equivalent to oml_vector_end.
  **/
-#define oml_vector_at(this, p_it, pos) ({ \
+#define oml_vector_seek(this, p_it, pos) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((pos) < 0 || (pos) >= (this)->num_elems) { \
