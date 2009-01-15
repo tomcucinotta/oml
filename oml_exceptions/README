@@ -1,0 +1,49 @@
+EXCEPTIONS FOR C - v0.9 - Copyright(C) 1998-2001 Alessandro Evangelista
+=======================================================================
+This package implements exception handling for the C language,
+through the use of a set of well-designed macros that mimic
+the C++ syntax for exception management.
+
+The project was originally developed for an exam at university.
+
+The syntax has been recently adapted by Tommaso Cucinotta, for
+the purpose of including the package within the Open Macro
+Library project (http://oml.sourceforge.net), and distributing
+it in a reusable form.
+
+
+REQUIREMENTS
+----------------------------------------------------------------------
+This package requires:
+- Doxygen, in order to build automatically the user manual from sources
+
+
+COMPILE
+----------------------------------------------------------------------
+Just type `make'. The `make doc' target builds the documentation
+in the doc/ subfolder.
+
+
+INSTALL
+----------------------------------------------------------------------
+Copy the dynamically linkable library and the oml_exceptions.h header
+file wherever you can access them on your system (i.e., respectively,
+in /usr/local/lib and /usr/local/include).
+
+
+DOCUMENTATION
+----------------------------------------------------------------------
+The user-manual is automatically generated from the sources using
+Doxygen, as a consequence of the `make doc' target.
+For a few examples of usage, check out the examples/ subfolder.
+
+
+KNOWN BUGS
+----------------------------------------------------------------------
+Except that the library is not thread-safe, none at the moment.
+
+
+LICENSE
+----------------------------------------------------------------------
+This software is distributed under a LGPL license of use. See the
+LICENSE.TXT file for details.

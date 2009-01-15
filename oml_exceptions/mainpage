@@ -1,0 +1,74 @@
+/*!  \mainpage Package for C Hierarchical Exception Handling Library
+
+\section index Index
+
+	\ref intro
+
+	\ref install
+
+	\ref usage
+
+ \section intro Introduction
+ 
+	This package lets you use exception handling mechanims in Ansi C by means of a few number of 
+	 easly portable macros and functions.
+ 
+  
+	Knowing Java's or C++'s exception syntax is 99% of th know-how needed to work with this package.
+ 
+	The syntax is as much as possible similar to that of Java language. 
+	  
+	The exception handlers part resembles the ADA syntax.
+
+\section insight An Exception World Insight
+
+	\subsection why Why should I use exceptions?
+
+		During normal program execution many events can happen which we could could classify ass exceptional.
+		An error could be caused by a file containing incorrect information, a bad network connection or by an invalid
+		array or by an access to an indefinte reference in the code. 
+		
+		To ignore these events often means to leave the program in an inconsistent state.
+
+		To Postpone the <rilevare> or the handling of that conditions let problematic to reset a consistent state, if not
+		impossible.
+
+\section install Installation
+ 
+	You have just to copy  two files in your source/include tree (exception.h, exception.c) and compile and link 
+	the source file exception.c.
+
+\subsection step1 Step 1: Opening the box
+
+
+
+\section usage Usage
+
+	Have look to this code fragment:
+
+	\code
+
+	try 
+	{
+	}
+	finally 
+	{
+	}
+	handle
+		when(,,,) {
+		}
+	end
+
+	\endcode
+
+	\section todo TODO
+
+	There are many things to do in this world, man
+
+	\section bugs BUGS
+
+	No Know bugs
+
+	etc...
+
+*/

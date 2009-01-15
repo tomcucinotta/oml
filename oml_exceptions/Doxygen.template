@@ -1,0 +1,16 @@
+PROJECT_NAME       = "C Hierarchical Exception Handling Library"
+#OUTPUT_LANGUAGE  = Italian
+OUTPUT_DIRECTORY   = doc
+HAVE_DOT           = YES
+EXTRACT_ALL        = NO
+GENERATE_LATEX     = YES
+GENERATE_MAN       = NO
+GENERATE_RTF       = NO
+CASE_SENSE_NAMES = NO
+ENABLE_PREPROCESSING       = YES
+INPUT              = .
+FILE_PATTERNS      = *.h mainpage
+RECURSIVE		= NO
+QUIET              = YES
+JAVADOC_AUTOBRIEF = YES
+EXAMPLE_PATH = examples
