@@ -66,6 +66,9 @@ static void __oml_exc_abort()
   abort();
 }
 
+/** This variable is lacking the thread-local qualifier on purpose:
+ ** the termination handler should be a singleton, not per-thread.
+ **/
 static PFV __oml_term_handler = &__oml_exc_abort;
 
 PFV oml_set_terminate(PFV new_handler)
