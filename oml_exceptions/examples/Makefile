@@ -1,14 +1,16 @@
 CFLAGS=-I../ -I. -Wall -Wformat
-LDFLAGS=-L../ -loml_exceptions
+LDFLAGS=-L../ -Xlinker -rpath -Xlinker ../ -loml_exceptions
 
-all: test-queue test-ex
+PROGRAMS=test-ex
+
+all: $(PROGRAMS)
 
 main: test-queue.o queue.o
 
 test-ex: test-ex.c
 
 clean:
-	rm -f *.o *~ *.bak
+	rm -f *.o *~ *.bak $(PROGRAMS)
 
 dep:
 	makedepend -- -Y -- *.c

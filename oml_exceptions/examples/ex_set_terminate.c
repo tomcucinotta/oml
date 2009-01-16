@@ -10,8 +10,7 @@ main()
 {
 	...
 
-	old_handler = set_terminate( &My_Terminate );
+	old_handler = oml_set_terminate( &My_Terminate );
 	...
 
 }
- 

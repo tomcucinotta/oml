@@ -1,4 +1,20 @@
 /*
+* This file is part of Open Macro Library (OML) - http://oml.sourceforge.net/
+*
+* Copyright (C) 2008, Alessandro Evangelista <evangelista@gmx.net>
+*
+* OML is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+* version.
+*
+* OML is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with Fluid. If not, see
+* <http://www.gnu.org/licenses/>.
+*/ 
+
+/*
  * exception.c
  *
  * Package for exception handling for the C language.
@@ -25,18 +41,18 @@ static void prnerr()
 #endif
 
 
-int ExcCurrentContext = -1;
+__thread int __oml_ExcCurrentContext = -1;
 
-Exception EException = { "EException", NULL };
+const Exception EException = { "EException", NULL };
 
 oml_define_exception(EError) oml_extends(EException);
 
-Exception* __oml_raised;
+__thread const Exception* __oml_raised;
 
-jmp_buf ExcExceptionContext[MAX_NESTED];
+__thread jmp_buf __oml_ExcExceptionContext[MAX_NESTED];
 
 void oml_print_exception() {
-  if (__oml_raised!=NULL) {
+  if (__oml_raised != NULL) {
     puts(__oml_raised->name);
 #ifdef __PRNERRNO
     prnerr();
@@ -50,25 +66,24 @@ static void __oml_exc_abort()
   abort();
 }
 
-PFV term_handler = &__oml_exc_abort;
+static PFV __oml_term_handler = &__oml_exc_abort;
 
 PFV oml_set_terminate(PFV new_handler)
 {
-	PFV old_handler = term_handler;
-	term_handler = new_handler;
+	PFV old_handler = __oml_term_handler;
+	__oml_term_handler = new_handler;
 	return old_handler;
 }
 
 static void __oml_terminate()
 {
 	puts("Terminate()");
-	(*term_handler)();
+	(*__oml_term_handler)();
 }
 
 #define EXCEPTION_RAISED		-1
 
-void __oml_exc_throw(raising)
-Exception *raising;
+void __oml_exc_throw(const Exception *raising)
 {
   /**** startdel */
   /* if ( raised == NULL) raised = raising; */
@@ -76,7 +91,7 @@ Exception *raising;
   /*  exit(-17); */
   /**** enddel */
 
-  if ( ExcCurrentContext < 0 )
+  if ( __oml_ExcCurrentContext < 0 )
     __oml_terminate();
   /* 
    * se si cerca di sollevare una eccezione quando un'altra ancora
@@ -88,17 +103,16 @@ Exception *raising;
 
     oml_print_exception();
 
-  longjmp(ExcExceptionContext[ExcCurrentContext], EXCEPTION_RAISED);
+  longjmp(__oml_ExcExceptionContext[__oml_ExcCurrentContext], EXCEPTION_RAISED);
 }
 
 
 #define MATCH		1
 #define NOT_MATCH	0
 
-int __oml_exc_match(e)
-Exception* e;
+int __oml_exc_match(const Exception* e)
 {
-	Exception* p;
+	const Exception* p;
 	
 	p = __oml_raised;
 	

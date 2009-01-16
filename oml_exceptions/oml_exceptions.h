@@ -1,3 +1,19 @@
+/*
+* This file is part of Open Macro Library (OML) - http://oml.sourceforge.net/
+*
+* Copyright (C) 2008, Alessandro Evangelista <evangelista@gmx.net>
+*
+* OML is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+* version.
+*
+* OML is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with Fluid. If not, see
+* <http://www.gnu.org/licenses/>.
+*/ 
+
 /** 
  *  \file		oml_exceptions.h
  *  \brief		This is the main include file for exception handling.
@@ -35,8 +51,8 @@ void oml_print_exception();
  * \see oml_throw
  */ 
 struct Exception {
-	const char		*name;		///< The name of the exception.
-	Exception		*parent;	///< Pointer to the parent exception structure.
+	const char	*name;		///< The name of the exception.
+	const Exception	*parent;	///< Pointer to the parent exception structure.
 };
 
 
@@ -96,7 +112,7 @@ oml_define_exception( EDerived ) oml_extends(EBase);
  * \see oml_extends, oml_declare_exception
  */ 
 #define oml_define_exception(e) \
-	Exception e = { #e, 
+	const Exception e = { #e, 
 
 /**
  * This macro declares an exception.
@@ -137,7 +153,7 @@ oml_declare_exception(EFileRead);
  *
  * \see EError, oml_try, oml_throw, oml_finally, oml_handle, oml_when, oml_end
  */ 
-extern Exception EException;
+extern const Exception EException;
 
 /**
  * This is the root error exception.
@@ -148,7 +164,7 @@ extern Exception EException;
  *
  * \see EException, oml_try, oml_throw, oml_finally, oml_handle, oml_when, oml_end
  */
-extern Exception EError;
+extern const Exception EError;
 
 
 /**
@@ -173,12 +189,12 @@ typedef void (*PFV)();
  */ 
 #define MAX_NESTED 10
 
-extern jmp_buf ExcExceptionContext[MAX_NESTED];
-extern int ExcCurrentContext;
-extern Exception* __oml_raised;
+extern __thread jmp_buf __oml_ExcExceptionContext[MAX_NESTED];
+extern __thread int __oml_ExcCurrentContext;
+extern __thread const Exception* __oml_raised;
 
-extern void __oml_exc_throw(Exception* e);
-extern int __oml_exc_match(Exception* e);
+extern void __oml_exc_throw(const Exception* e);
+extern int __oml_exc_match(const Exception* e);
 
 /**
  * This functions sets the terminate oml_handler.
@@ -188,7 +204,7 @@ extern int __oml_exc_match(Exception* e);
  *
  * \code
 
-void terminate()
+void oml_terminate()
 
  * \endcode	
  *
@@ -263,7 +279,7 @@ volatile
  */ 
 #define oml_try \
 	__oml_raised = NULL; \
-	if ( setjmp (ExcExceptionContext[++ExcCurrentContext])  == 0 ) {
+	if ( setjmp (__oml_ExcExceptionContext[++__oml_ExcCurrentContext])  == 0 ) {
 
 /**
  * This macro starts a oml_finally-block.
@@ -305,7 +321,7 @@ volatile
  * \see oml_try, oml_throw, oml_when, oml_finally, oml_end
  */ 
 #define oml_handle \
-	}ExcCurrentContext--; if (__oml_raised == NULL) {
+	} __oml_ExcCurrentContext--; if (__oml_raised == NULL) {
 
 /**
  * This macro starts a oml_when-block.
@@ -401,6 +417,6 @@ throw(EException);
  * \see oml_when, oml_try, oml_handle, oml_end, oml_finally
  */ 
 #define oml_ereturn(x) \
-	{ExcCurrentContext--; return(x)}
+	{ __oml_ExcCurrentContext--; return(x)}
 
 #endif /* __OML_EXCEPTION */

@@ -40,10 +40,11 @@ For a few examples of usage, check out the examples/ subfolder.
 
 KNOWN BUGS
 ----------------------------------------------------------------------
-Except that the library is not thread-safe, none at the moment.
+None at the moment. In case you find a bug, please report by using the
+OML mailing list.
 
 
 LICENSE
 ----------------------------------------------------------------------
 This software is distributed under a LGPL license of use. See the
-LICENSE.TXT file for details.
+COPYING.LESSER file for details.
