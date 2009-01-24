@@ -10,11 +10,11 @@
 * OML is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public License along with Fluid. If not, see
+* You should have received a copy of the GNU Lesser General Public License along with OML. If not, see
 * <http://www.gnu.org/licenses/>.
-*/ 
+*/
 
-/** 
+/**
  *  \file		oml_exceptions.h
  *  \brief		This is the main include file for exception handling.
  *  \author		Alessandro Evangelista
@@ -34,7 +34,7 @@
  * This is the type of any exception variable.
  *
  * \see oml_throw
- */ 
+ */
 typedef struct Exception Exception;
 
 /**
@@ -42,29 +42,29 @@ typedef struct Exception Exception;
  *
  * \deprecated { this is description why }
  * \see oml_throw
- */ 
+ */
 void oml_print_exception();
 
 /**
  * This is the kernel structure of the exception handling package.
  *
  * \see oml_throw
- */ 
+ */
 struct Exception {
 	const char	*name;		///< The name of the exception.
 	const Exception	*parent;	///< Pointer to the parent exception structure.
 };
 
 
-/* 
+/*
 	declaration example:
 
 		exception hierarchy:
 
-			EException -> Efile -> EFileOpen, EfileClose, EFileRead, EFileWrite 
-		
+			EException -> Efile -> EFileOpen, EfileClose, EFileRead, EFileWrite
+
 		file.h contains:
-		  
+
 			oml_declare_exception(EFile);
 			oml_declare_exception(EFileOpen);
 			oml_declare_exception(EFileClose);
@@ -79,7 +79,7 @@ struct Exception {
 			oml_define_exception( EFileRead ) oml_extends( EFile );
 			oml_define_exception( EFileWrite ) oml_extends( EFile );
 
-	
+
 */
 
 /**
@@ -95,8 +95,8 @@ oml_define_exception( EDerived ) oml_extends(EBase);
 
  * \endcode
  *
- * The exceptions are variables. So, if you want to use an exception in several modules, you 
- * have to declare that exception(variable) as extern in the header file of the module that 
+ * The exceptions are variables. So, if you want to use an exception in several modules, you
+ * have to declare that exception(variable) as extern in the header file of the module that
  * defines the exception.
  *
  * For example in the source file (module.c):
@@ -110,9 +110,9 @@ oml_define_exception( EDerived ) oml_extends(EBase);
  * \hideinitializer
  *
  * \see oml_extends, oml_declare_exception
- */ 
+ */
 #define oml_define_exception(e) \
-	const Exception e = { #e, 
+	const Exception e = { #e,
 
 /**
  * This macro declares an exception.
@@ -130,7 +130,7 @@ oml_declare_exception(EFileRead);
  * \hideinitializer
  *
  * \see oml_define_exception
- */ 
+ */
 #define oml_declare_exception(e) \
 	extern Exception e
 
@@ -140,7 +140,7 @@ oml_declare_exception(EFileRead);
  * \hideinitializer
  *
  * \see exception
- */ 
+ */
 #define oml_extends(e) \
 	&e }
 
@@ -152,7 +152,7 @@ oml_declare_exception(EFileRead);
  * Any exception is logically derived from EException exception.
  *
  * \see EError, oml_try, oml_throw, oml_finally, oml_handle, oml_when, oml_end
- */ 
+ */
 extern const Exception EException;
 
 /**
@@ -186,7 +186,7 @@ typedef void (*PFV)();
  * sensibility is reset after yoy go back to this code point (where you go beyond).
  *
  * \see oml_try, oml_throw, oml_finally, oml_handle, oml_when, oml_end
- */ 
+ */
 #define MAX_NESTED 10
 
 extern __thread jmp_buf __oml_ExcExceptionContext[MAX_NESTED];
@@ -206,7 +206,7 @@ extern int __oml_exc_match(const Exception* e);
 
 void oml_terminate()
 
- * \endcode	
+ * \endcode
  *
  * The default terminate oml_handler is the abort function, that return the program to the operating
  * system.
@@ -215,8 +215,8 @@ void oml_terminate()
 
 void abort()
 
- * \endcode	
- * 
+ * \endcode
+ *
  * The reason of a terminate function call can be a programming error (you did not provide an oml_handler
  * for a particular execution flux) or you intentionally decided to not oml_handle that exception: the only
  * way to treat that condition is to exit the program.
@@ -228,15 +228,15 @@ void abort()
  * \return The old terminate oml_handler.
  *
  * \see oml_try, oml_throw, oml_finally, oml_handle, oml_when, oml_end
- */ 
+ */
 extern PFV oml_set_terminate(PFV pTerminate);
 
 
 /**
  * This macro starts a oml_try-block.
  *
- * In order to construct an exception oml_handler you have to enclose the statements 
- * that might oml_throw an exception within a oml_try block. 
+ * In order to construct an exception oml_handler you have to enclose the statements
+ * that might oml_throw an exception within a oml_try block.
  *
  * This code fragment shows the a basic idea of how the exception package works:
  *
@@ -248,14 +248,14 @@ extern PFV oml_set_terminate(PFV pTerminate);
  *
  * \include ex_goto.c
  *
- * The variables of the classes 
+ * The variables of the classes
  * \code
 
 auto
 
  * \endcode
 
- * and	
+ * and
  * \code
 
 register
@@ -271,12 +271,12 @@ volatile
  *
  * For example:
  *
- * \include ex_volatile.c 
+ * \include ex_volatile.c
  *
  * \hideinitializer
  *
- * \see oml_throw, oml_finally, oml_handle, oml_when, oml_end 
- */ 
+ * \see oml_throw, oml_finally, oml_handle, oml_when, oml_end
+ */
 #define oml_try \
 	__oml_raised = NULL; \
 	if ( setjmp (__oml_ExcExceptionContext[++__oml_ExcCurrentContext])  == 0 ) {
@@ -284,34 +284,34 @@ volatile
 /**
  * This macro starts a oml_finally-block.
  *
- * The runtime system always executes the statements within the oml_finally block 
- * regardless of what happens within the oml_try block. 
+ * The runtime system always executes the statements within the oml_finally block
+ * regardless of what happens within the oml_try block.
  *
- * The oml_finally block let you provide a mechanism for cleaning up the state of 
- * the method before allowing control to be passed to a different 
- * part of the program without duplicate the code in all oml_handlers. 
+ * The oml_finally block let you provide a mechanism for cleaning up the state of
+ * the method before allowing control to be passed to a different
+ * part of the program without duplicate the code in all oml_handlers.
  *
  * The oml_finally block is optional in a exception handling context.
  *
- * For example: 
- * 
+ * For example:
+ *
  * \include ex_nofinally.c
  *
- * Using the oml_finally block: 
+ * Using the oml_finally block:
  *
  * \include ex_finally.c
  *
  * \hideinitializer
- * 
+ *
  * \see oml_try, oml_throw, oml_handle, oml_when, oml_end
- */ 
+ */
 #define oml_finally \
 	}{
 
 /**
- * This macro starts a oml_when statements sequence 
+ * This macro starts a oml_when statements sequence
  *
- * You associate exception oml_handlers with a oml_try statement 
+ * You associate exception oml_handlers with a oml_try statement
  * by providing one or more oml_when blocks after the oml_try oml_handle statement.
  *
  * The oml_handle statement starts a sequence of oml_when statements after the oml_try block.
@@ -319,14 +319,14 @@ volatile
  * \hideinitializer
  *
  * \see oml_try, oml_throw, oml_when, oml_finally, oml_end
- */ 
+ */
 #define oml_handle \
 	} __oml_ExcCurrentContext--; if (__oml_raised == NULL) {
 
 /**
  * This macro starts a oml_when-block.
  *
- * You associate exception oml_handlers with a oml_try statement 
+ * You associate exception oml_handlers with a oml_try statement
  * by providing one or more oml_when blocks after the oml_try oml_handle statement.
  *
  * The oml_handle statement starts a sequence of oml_when statements.
@@ -340,17 +340,17 @@ volatile
  * \hideinitializer
  *
  * \see oml_try, oml_throw, oml_handle, oml_end, oml_finally
- */ 
+ */
 #define oml_when(e) \
 	} else if ( __oml_exc_match(&e) ) {
 
 /**
- * This macro ends an exception handling code fragment. 
- * 
+ * This macro ends an exception handling code fragment.
+ *
  * \hideinitializer
  *
  * \see any, oml_try, oml_throw, oml_handle, oml_finally
- */ 
+ */
 #define oml_end \
 	} else __oml_exc_throw(__oml_raised);
 
@@ -358,8 +358,8 @@ volatile
 /**
  * This macro oml_throws an exception.
  *
- * The oml_throw statement requires a single argument: an Exception object. 
- * 
+ * The oml_throw statement requires a single argument: an Exception object.
+ *
  * \code
 
 throw(EException);
@@ -371,7 +371,7 @@ throw(EException);
  * \hideinitializer
  *
  * \see oml_rethrow, oml_try, oml_handle
- */ 
+ */
 #define oml_throw(e) \
 	__oml_exc_throw(&e)
 
@@ -383,7 +383,7 @@ throw(EException);
  * \hideinitializer
  *
  * \see oml_when
- */ 
+ */
 #define oml_any	\
 	(*__oml_raised)
 
@@ -392,18 +392,18 @@ throw(EException);
  *
  * You can use the oml_rethrow statement inside a oml_when-block to oml_throw again
  * the current oml_handled exception.
- * 
+ *
  * \include ex_rethrow.c
  *
  * \hideinitializer
  *
  * \see oml_throw, oml_try, oml_handle, oml_end, oml_finally
- */ 
+ */
 #define oml_rethrow \
 	__oml_exc_throw(__oml_raised);
 
 /**
- * This macro returns the function 
+ * This macro returns the function
  *
  * You can use the oml_ereturn statement inside a oml_try-block to return from
  * the current function.
@@ -415,7 +415,7 @@ throw(EException);
  * \hideinitializer
  *
  * \see oml_when, oml_try, oml_handle, oml_end, oml_finally
- */ 
+ */
 #define oml_ereturn(x) \
 	{ __oml_ExcCurrentContext--; return(x)}
 

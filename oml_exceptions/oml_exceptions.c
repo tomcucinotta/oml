@@ -10,9 +10,9 @@
 * OML is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public License along with Fluid. If not, see
+* You should have received a copy of the GNU Lesser General Public License along with OML. If not, see
 * <http://www.gnu.org/licenses/>.
-*/ 
+*/
 
 /*
  * exception.c
@@ -96,7 +96,7 @@ void __oml_exc_throw(const Exception *raising)
 
   if ( __oml_ExcCurrentContext < 0 )
     __oml_terminate();
-  /* 
+  /*
    * se si cerca di sollevare una eccezione quando un'altra ancora
    * non e' stata gestita si ignora la nuova e si rilancia la vecchia
    *
@@ -116,9 +116,9 @@ void __oml_exc_throw(const Exception *raising)
 int __oml_exc_match(const Exception* e)
 {
 	const Exception* p;
-	
+
 	p = __oml_raised;
-	
+
 	do
 	{
 	  if (p == e) {
@@ -131,7 +131,7 @@ int __oml_exc_match(const Exception* e)
 	while (p != NULL);
 
 		/* se p == NULL -> p era EException */
-	
+
 	return NOT_MATCH;
-	
+
 }

@@ -15,7 +15,7 @@ clean:
 	rm -rf doc/*
 
 dep:
-	makedepend -- -Y -- *.c
+	makedepend $(CFLAGS) -- -Y -- *.c
 
 # DO NOT DELETE
 
