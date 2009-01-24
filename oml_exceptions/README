@@ -1,5 +1,7 @@
-EXCEPTIONS FOR C - v0.9 - Copyright(C) 1998-2001 Alessandro Evangelista
+EXCEPTIONS FOR C - Version 0.1.0
 =======================================================================
+Copyright(c) 1998-2008 Alessandro Evangelista
+-----------------------------------------------------------------------
 This package implements exception handling for the C language,
 through the use of a set of well-designed macros that mimic
 the C++ syntax for exception management.
