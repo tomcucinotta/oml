@@ -19,7 +19,7 @@ int oml_log_msg_id = 0;  /**< logging message identifier number */
 
 char *oml_strerror(oml_rv err) {
   int index;
-  int errno = (int) err;
+  int errno = oml_rv_int(err);
   if (err == OML_OK)
     return "Success";
 

@@ -55,6 +55,11 @@ risk of accidental override of a library symbol by the
 application program, that almost certainly leads to
 hardly debuggable bugs.
 
+The __thread type qualifier is currently used within
+the oml_exceptions component in order to provide thread
+safety. Another related construct that might turn out to
+be useful could be __attribute__(tls_model()).
+
 [ To be removed
 The transparent_union type attribute could be used to allow
 overriding of functions with same name. I'm not sure, yet,

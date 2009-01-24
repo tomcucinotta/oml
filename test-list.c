@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
   oml_chk_ok_exit(oml_list_push_front(&h, 1024));
   printf("Size of list: %d\n", oml_list_size(&h));
   oml_chk_exit(oml_list_size(&h) == 1);
-  oml_chk_exit(oml_list_front(&h, &v) == OML_OK && v == 1024);
+  oml_chk_exit(oml_list_front(&h, &v) == OML_OK && (v == 1024));
   oml_chk_ok_exit(oml_list_pop_front(&h));
 
   printf("Size of list: %d\n", oml_list_size(&h));

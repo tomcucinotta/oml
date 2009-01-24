@@ -1,12 +1,14 @@
 PACKAGE:=oml
 VERSION:=$(shell cat VERSION)
 TEST_PROGS=$(patsubst %.c,%,$(wildcard test-*.c))
-LIB_SRCS=$(patsubst test-%.c,,$(wildcard *.c))
+LIB_SRCS=$(patsubst test-%.c,,$(wildcard *.c oml_exceptions/*.c))
 LIB_OBJS=$(patsubst %.c,%.o,$(LIB_SRCS))
 OML_LIB=liboml.so
-CFLAGS=-Wall
+CFLAGS=-Wall -Wformat -fPIC -I.
 
-all: $(OML_LIB) $(TEST_PROGS)
+all: lib
+
+lib: $(OML_LIB)
 
 TEST_LOG_FILE=tests-log.txt
 
@@ -57,14 +59,16 @@ clean:
 distclean: clean
 	rm -rf $(shell find . -type d -name CVS)
 
-vars:
-	echo TEST_PROGS=$(TEST_PROGS)
-	echo LIB_SRCS=$(LIB_SRCS)
-	echo LIB_OBJS=$(LIB_OBJS)
+.PHONY: ChangeLog
+ChangeLog:
+	cvs2cl -P
+
+README:
+	sed -i -e 's/Version .*/Version '`cat VERSION`'/' README
 
 dist: dist-src
 
-dist-src:
+dist-src: README
 	rm -rf /tmp/$(PACKAGE)-$(VERSION) && mkdir /tmp/$(PACKAGE)-$(VERSION) && cp -r * /tmp/$(PACKAGE)-$(VERSION) && cd /tmp/$(PACKAGE)-$(VERSION) && make distclean && cd .. && tar -czf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION) && echo "Distribution archive in /tmp/$(PACKAGE)-$(VERSION).tar.gz"
 
 dep:

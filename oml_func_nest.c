@@ -7,10 +7,10 @@
   printf("Unlock on %d\n", lock); \
   void __sync(void) 
 
-int main(int argc, char *argv[]) {
-  int l = 3;
+/* int main(int argc, char *argv[]) { */
+/*   int l = 3; */
 
-  sync(l) {
-    printf("args=%d\n", argc);
-  }
-}
+/*   sync(l) { */
+/*     printf("args=%d\n", argc); */
+/*   } */
+/* } */

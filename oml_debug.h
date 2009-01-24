@@ -31,7 +31,7 @@
  */
 typedef struct oml_rv { } *oml_rv;
 
-#define oml_rv_int(rv) ((int)(rv))
+#define oml_rv_int(rv) ((int)(long)(rv))
 #define oml_int_rv(err) ((oml_rv) err)
 
   /** Operation successfully completed          */
@@ -299,6 +299,21 @@ do {                                                    \
   if (! ok) {                                                           \
     oml_log_err("ASSERTION FAILED: '" #cond "' at line %d of file %s.",\
              __LINE__, __FILE__);                                       \
+    exit(-1);                                                           \
+  }                                                                     \
+} while (0)
+
+/** Evaluate cond and cause exit(-1) if it is not satisfied, logging
+ * a user-specified error message
+ *
+ * Only available in user-space.
+ * 
+ * This check happens always, independently of debug settings.
+ */
+#define oml_chk_exit_msg(cond, msg, args...) do {			\
+  int ok = (cond);                                                      \
+  if (! ok) {                                                           \
+    oml_log_err(msg,##args);                                            \
     exit(-1);                                                           \
   }                                                                     \
 } while (0)
