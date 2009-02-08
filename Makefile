@@ -4,7 +4,7 @@ TEST_PROGS=$(patsubst %.c,%,$(wildcard test-*.c))
 LIB_SRCS=$(patsubst test-%.c,,$(wildcard *.c oml_exceptions/*.c))
 LIB_OBJS=$(patsubst %.c,%.o,$(LIB_SRCS))
 OML_LIB=liboml.so
-CFLAGS=-Wall -Wformat -fPIC -I.
+CFLAGS+=-Wall -Wformat -fPIC -I.
 
 all: lib
 
@@ -15,7 +15,11 @@ TEST_LOG_FILE=tests-log.txt
 test: $(TEST_PROGS)
 	@$(foreach prog,$(TEST_PROGS),printf "%30s" "Running $(prog) ... " ; printf "\n%30s\n" "RUNNING TEST $(prog)" >> $(TEST_LOG_FILE); if LD_LIBRARY_PATH="$$LD_LIBRARY_PATH:." ./$(prog) >>$(TEST_LOG_FILE) 2>> $(TEST_LOG_FILE); then echo "Ok"; else echo "Failed (see $(TEST_LOG_FILE))"; fi; )
 
-GEN_FILES=oml_svector_find.h test-svector-find.c oml_list_find.h test-list-find.c
+GEN_FILES:=oml_svector_find.h test-svector-find.c oml_list_find.h test-list-find.c
+GEN_FILES:=$(patsubst %.h,%_namespace.h,$(filter-out %_namespace.h %.c,$(GEN_FILES) $(wildcard *.h)))
+
+x:
+	echo $(GEN_FILES)
 
 gen: $(GEN_FILES)
 
@@ -44,6 +48,19 @@ doc:
 
 $(OML_LIB): $(LIB_OBJS)
 	gcc -shared $^ -o $@
+
+%_namespace.h: %.h
+	@echo Generating $@...
+	@echo "/* DO NOT EDIT: Automatically generated from Makefile */" > $@
+	@echo "" >> $@
+	@echo "#ifndef __$(shell echo $(@:.h=) | tr [:lower:] [:upper:])__" >> $@
+	@echo "#  define __$(shell echo $(@:.h=) | tr [:lower:] [:upper:])__" >> $@
+	@echo "#include \"$<\"" >> $@
+	@echo "" >> $@
+	@grep '^#define oml_[a-zA-Z_0-9]* ' $< | sed -e 's/#define oml_\([a-zA-Z_0-9]*\).*/#define \1 oml_\1/' >> $@
+	@grep '^#define oml_[a-zA-Z_0-9]*(' $< | sed -e 's/#define oml_\([a-zA-Z_0-9]*\)\((.*)\).*/#define \1\2 oml_\1\2/' >> $@
+	@echo "" >> $@
+	@echo "#endif /* __$(shell echo $(@:.h=) | tr [:lower:] [:upper:])__ */ " >> $@
 
 test-%: test-%.o
 	gcc $(CFLAGS) -L. -loml $< -o $@
@@ -84,12 +101,14 @@ test-heap.o: oml_debug.h oml_heap.h oml_malloc.h oml_common.h
 test-list.o: oml_debug.h oml_list.h oml_malloc.h
 test-lstack.o: oml_debug.h oml_lstack.h oml_list.h oml_malloc.h
 test-map.o: oml_debug.h oml_map.h oml_malloc.h oml_common.h oml_pair.h
-test-map.o: oml_list.h oml_list_find.h
+test-map.o: oml_list.h
+test-oml-sync-nest.o: oml_debug.h
 test-pair.o: oml_debug.h oml_pair.h oml_common.h
 test-queue.o: oml_debug.h oml_vqueue.h oml_malloc.h
+test-scope.o: oml_scope.h
 test-set.o: oml_debug.h oml_set.h oml_malloc.h oml_common.h oml_list.h
-test-set.o: oml_list_find.h
 test-svector.o: oml_debug.h oml_svector.h oml_malloc.h
+test-sync.o: oml_sync.h oml_debug.h oml_func.h
 test-theap.o: oml_debug.h oml_theap.h oml_malloc.h oml_common.h
 test-vector-find.o: oml_debug.h oml_vector_find.h oml_vector.h oml_malloc.h
 test-vector-find.o: oml_common.h

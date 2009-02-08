@@ -17,6 +17,8 @@
 #  define OML_FUNC_MAX_ARGS_SIZE 64
 #endif
 
+typedef void (* __oml_void_func)(void);
+
 /** @note
  ** This works only with functions that require less than
  ** OML_FUNC_MAX_ARGS_SIZE bytes in the stack.
@@ -28,7 +30,7 @@
     void *__func_args, *__func_rv;              \
     oml_log_debug("Entering function: " #name); \
     __func_args = __builtin_apply_args();       \
-    __func_rv = __builtin_apply(name##__, __func_args, OML_FUNC_MAX_ARGS_SIZE); \
+    __func_rv = __builtin_apply((__oml_void_func) name##__, __func_args, OML_FUNC_MAX_ARGS_SIZE); \
     oml_log_debug("Leaving function: " #name);  \
     __builtin_return(__func_rv);                \
   }                                             \
@@ -40,7 +42,7 @@
     void *__func_args, *__func_rv;              \
     oml_log_debug("Entering block: " #name);    \
     __func_args = __builtin_apply_args();       \
-    __func_rv = __builtin_apply(name##__, __func_args, 0); \
+    __func_rv = __builtin_apply((__oml_void_func) name##__, __func_args, 0); \
     oml_log_debug("Leaving block: " #name);     \
     __builtin_return(__func_rv);                \
   }                                             \

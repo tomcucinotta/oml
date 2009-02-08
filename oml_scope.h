@@ -47,7 +47,8 @@ int ctxs_size = 0;
  ** @todo
  ** Currently, this introduces a harmless warning on each return attempt from functions returning void.
  **/
-#define return return __return(__func__), 
+//#define return return __return(__func__), 
+#define return __return(__func__), return 
 
 /** Start a scoped code segment
  **/
