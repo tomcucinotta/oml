@@ -23,7 +23,8 @@ int main(int argc, char **argv) {
   oml_chk_ok_exit(oml_vector_push_back(&h, 1024));
   printf("Size of vector: %d\n", oml_vector_size(&h));
   oml_chk_exit(oml_vector_size(&h) == 1);
-  oml_chk_exit(oml_vector_front(&h, &v) == OML_OK && v == 1024);
+  v = oml_vector_front(&h);
+  oml_chk_exit(v == 1024);
   oml_chk_ok_exit(oml_vector_pop(&h));
 
   printf("Size of vector: %d\n", oml_vector_size(&h));
@@ -37,14 +38,14 @@ int main(int argc, char **argv) {
   printf("Size of vector: %d\n", oml_vector_size(&h));
   oml_chk_exit(oml_vector_size(&h) == 4);
 
-  oml_chk_exit((oml_vector_front(&h, &v) == OML_OK) && (v == 3));
-  oml_chk_ok_exit(oml_vector_pop(&h));
-  oml_chk_exit((oml_vector_front(&h, &v) == OML_OK) && (v == 1));
-  oml_chk_ok_exit(oml_vector_pop(&h));
-  oml_chk_exit((oml_vector_front(&h, &v) == OML_OK) && (v == 7));
-  oml_chk_ok_exit(oml_vector_pop(&h));
-  oml_chk_exit((oml_vector_front(&h, &v) == OML_OK) && (v == 4));
-  oml_chk_ok_exit(oml_vector_pop(&h));
+  oml_chk_exit((oml_vector_get_back(&h, &v) == OML_OK) && (v == 3));
+  oml_chk_ok_exit(oml_vector_pop_back(&h));
+  oml_chk_exit((oml_vector_get_back(&h, &v) == OML_OK) && (v == 1));
+  oml_chk_ok_exit(oml_vector_pop_back(&h));
+  oml_chk_exit((oml_vector_get_back(&h, &v) == OML_OK) && (v == 7));
+  oml_chk_ok_exit(oml_vector_pop_back(&h));
+  oml_chk_exit((oml_vector_get_back(&h, &v) == OML_OK) && (v == 4));
+  oml_chk_ok_exit(oml_vector_pop_back(&h));
   printf("Size of vector: %d\n", oml_vector_size(&h));
   oml_chk_exit(oml_vector_size(&h) == 0);
   oml_chk_exit(oml_vector_empty(&h));
@@ -75,8 +76,8 @@ int main(int argc, char **argv) {
 
   for (i = 0; i < SIZE; ++i) {
     oml_chk_exit(! oml_vector_empty(&h));
-    oml_chk_ok_exit(oml_vector_front(&h, &v));
-    oml_chk_ok_exit(oml_vector_pop(&h));
+    oml_chk_ok_exit(oml_vector_get_back(&h, &v));
+    oml_chk_ok_exit(oml_vector_pop_back(&h));
     printf("Extracted: %d, expected: %d\n", v, values[SIZE - 1 - i]);
     oml_chk_exit(v == values[SIZE - 1 - i]);
   }

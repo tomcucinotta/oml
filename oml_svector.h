@@ -134,7 +134,7 @@
       __rv = OML_E_EMPTY; \
       break; \
     } \
-    if (p_value) \
+    if ((p_value) != NULL)					 \
       *(p_value) = (this)->elems[(this)->num_elems - 1]; \
   } while (0); \
   __rv; \

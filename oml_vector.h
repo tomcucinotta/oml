@@ -134,20 +134,22 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_vector_back(this, p_value) ({ \
+#define oml_vector_get_back(this, p_value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
       __rv = OML_E_EMPTY; \
       break; \
     } \
-    if (p_value) \
+    if ((p_value) != NULL) \
       *(p_value) = (this)->elems[(this)->num_elems - 1]; \
   } while (0); \
   __rv; \
 })
 
-/** Remove a value from (the tail of) the vector and return it.
+#define oml_vector_back(this) ((this)->elems[(this)->num_elems - 1])
+
+/** Remove a value from the tail of the vector and return it.
  **
  ** @param p_value
  **   Pointer to a variable that will contain the popped element,
@@ -157,6 +159,27 @@
  **   OML_OK or OML_E_EMPTY
  **/
 #define oml_vector_pop_back(this) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((this)->num_elems == 0) { \
+      __rv = OML_E_EMPTY; \
+      break; \
+    } \
+    (this)->num_elems--; \
+  } while (0); \
+  __rv; \
+})
+
+/** Remove a value from the head of the vector and return it.
+ **
+ ** @param p_value
+ **   Pointer to a variable that will contain the popped element,
+ **   or NULL if you don't need to know what has been extracted.
+ **
+ ** @return
+ **   OML_OK or OML_E_EMPTY
+ **/
+#define oml_vector_pop(this) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     if ((this)->num_elems == 0) { \
@@ -192,7 +215,7 @@
   __rv; \
 })
 
-/** Check if we may call oml_vector_value() **/
+/** Check if we may call oml_vector_get() or oml_vector_value() **/
 #define oml_vector_has_value(this, p_it) \
   (((p_it)->pos >= 0) && ((p_it)->pos < (this)->num_elems))
 
@@ -219,16 +242,44 @@
   __rv; \
 })
 
-/** Retrieve the next element of a forward iteration, if any.
- **
- ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
- **/
+/** Move the iterator n elements forward. */
+#define oml_vector_next_n(this, p_it, n) ({		\
+  oml_rv __rv = OML_OK;					\
+  int __i;						\
+  int __n = (n);					\
+  for (__i = 0; __i < __n && __rv == OML_OK; ++__i)	\
+    __rv = oml_vector_next((this), (p_it));		\
+  __rv;							\
+})
+
+/** Retrieve the next element of a forward iteration, if any. **/
 #define oml_vector_value(this, p_it) ((this)->elems[(p_it)->pos])
+
+/** Retrieve the first element of a forward iteration, if any. **/
+#define oml_vector_front(this) ((this)->elems[0])
+
+/** Retrieve and store in p_value the element referenced to by the iterator p_it.
+ **
+ ** @return
+ ** OML_E_NOT_FOUND if the iterator is past the last element in the vector.
+ **
+ ** @see oml_vector_value()
+ **/
+#define oml_vector_get(this, p_it, p_value) ({			\
+      oml_rv __rv = OML_OK;					\
+      do {							\
+	if (oml_vector_has_value((this), (p_it)))		\
+	  *(p_value) = oml_vector_value((this), (p_it));	\
+	else							\
+	  __rv = OML_E_NOT_FOUND;				\
+      } while (0);						\
+      __rv;							\
+    })
 
 /** Insert an element at the specified position in the vector.
  **
  ** All elements in the vector, including the one that would
- ** be returned through oml_vector_value() before the insertion,
+ ** be returned through oml_vector_get() before the insertion,
  ** are shifted one position forward in the vector.
  ** After the insertion operation, an iteration up to the end,
  ** through the same iterator, would retrieve the just inserted
@@ -258,7 +309,7 @@ for (it = v.begin(); it != v.end(); ++it)
 for (oml_vector_begin(&c, &it);
      ! oml_vector_at_end(&c, &it); // or has_value (less efficient)
      oml_vector_next(&c, &it))
-  printf("%d", oml_vector_value(&c, &it));
+  printf("%d", oml_vector_get(&c, &it));
 
 it = v.end();
 while (it != v.begin()) {
@@ -270,7 +321,7 @@ oml_vector_end(&c, &it);
 oml_vector_begin(&c, &begin);
 while (oml_vector_iter_ne(&c, &it, &begin)) {
   oml_vector_prev(&c, &it);
-  printf("%d", oml_vector_value(&c, &it));
+  printf("%d", oml_vector_get(&c, &it));
 }
 
 // Shorthand:
@@ -278,7 +329,7 @@ while (oml_vector_iter_ne(&c, &it, &begin)) {
 oml_vector_end(&c, &it);
 while (! oml_vector_at_begin(&c, &it, &begin)) {
   oml_vector_prev(&c, &it);
-  printf("%d", oml_vector_value(&c, &it));
+  printf("%d", oml_vector_get(&c, &it));
 }
 
 */

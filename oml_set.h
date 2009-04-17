@@ -112,7 +112,7 @@
     __rv = oml_list_find_eq(&((this)->elems[_set_pos]), __set_value, &it, _op_value_eq); \
     if (__rv != OML_OK) \
       break; \
-    __rv = oml_list_iter_del(&((this)->elems[_set_pos]), &it); \
+    __rv = oml_list_del(&((this)->elems[_set_pos]), &it); \
     (this)->num_elems--; \
   } while (0); \
   __rv; \

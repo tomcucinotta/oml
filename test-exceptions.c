@@ -1,8 +1,8 @@
-#include <oml_exceptions/oml_exceptions.h>
+#include <oml_exceptions.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-oml_define_exception(ENotReady) oml_extends(EException);
+oml_define_exception(ENotReady) oml_extends(oml_exception);
 
 void f()
 {
@@ -16,7 +16,7 @@ int main()
     f();
   }
   oml_handle
-      oml_when (EException)
+      oml_when (oml_exception)
       {
         printf("Exception caught !\n");
       }

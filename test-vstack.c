@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
   oml_chk_ok_exit(oml_vstack_push(&h, 1024));
   printf("Size of vstack: %d\n", oml_vstack_size(&h));
   oml_chk_exit(oml_vstack_size(&h) == 1);
-  oml_chk_exit(oml_vstack_front(&h, &v) == OML_OK && v == 1024);
+  v = oml_vstack_peek(&h);
+  oml_chk_exit(v == 1024);
   oml_chk_ok_exit(oml_vstack_pop(&h));
 
   printf("Size of vstack: %d\n", oml_vstack_size(&h));
@@ -36,13 +37,13 @@ int main(int argc, char **argv) {
   printf("Size of vstack: %d\n", oml_vstack_size(&h));
   oml_chk_exit(oml_vstack_size(&h) == 4);
 
-  oml_chk_exit((oml_vstack_front(&h, &v) == OML_OK) && (v == 3));
+  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 3));
   oml_chk_ok_exit(oml_vstack_pop(&h));
-  oml_chk_exit((oml_vstack_front(&h, &v) == OML_OK) && (v == 1));
+  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 1));
   oml_chk_ok_exit(oml_vstack_pop(&h));
-  oml_chk_exit((oml_vstack_front(&h, &v) == OML_OK) && (v == 7));
+  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 7));
   oml_chk_ok_exit(oml_vstack_pop(&h));
-  oml_chk_exit((oml_vstack_front(&h, &v) == OML_OK) && (v == 4));
+  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 4));
   oml_chk_ok_exit(oml_vstack_pop(&h));
   printf("Size of vstack: %d\n", oml_vstack_size(&h));
   oml_chk_exit(oml_vstack_size(&h) == 0);
@@ -74,7 +75,7 @@ int main(int argc, char **argv) {
 
   for (i = 0; i < SIZE; ++i) {
     oml_chk_exit(! oml_vstack_empty(&h));
-    oml_chk_ok_exit(oml_vstack_front(&h, &v));
+    oml_chk_ok_exit(oml_vstack_peek(&h, &v));
     oml_chk_ok_exit(oml_vstack_pop(&h));
     printf("Extracted: %d, expected: %d\n", v, values[SIZE - 1 - i]);
     oml_chk_exit(v == values[SIZE - 1 - i]);

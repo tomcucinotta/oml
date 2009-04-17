@@ -11,8 +11,8 @@
 
 #define oml_define_list(value_type) \
   typedef struct oml_list_node_##value_type { \
-    value_type value; \
     struct oml_list_node_##value_type *p_next; \
+    value_type value; \
   } oml_list_node_##value_type; \
   typedef oml_list_node_##value_type *oml_list_iterator_##value_type; \
   typedef struct oml_list_##value_type { \
@@ -91,7 +91,7 @@
       __rv = OML_E_EMPTY; \
       break; \
     } \
-    if (p_value) \
+    if ((p_value) != NULL)			  \
       *(p_value) = (this)->p_head->value; \
   } while (0); \
   __rv; \
@@ -238,35 +238,40 @@
 
 /** Retrieve and store in p_value the element referenced to by the iterator p_it.
  **
- ** @return OML_E_NOT_FOUND if the iterator is past the last element in the list.
- **/
-#define oml_list_get(this, p_it, p_value) ({ \
-  oml_rv __rv = OML_OK; \
-  do { \
-    if (! oml_list_has_value((this), (p_it))) { \
-      __rv = OML_E_NOT_FOUND; \
-      break; \
-    } \
-    if (*(p_it) == NULL) \
-      *(p_value) = (this)->p_head->value; \
-    else \
-      *(p_value) = (*(p_it))->p_next->value; \
-  } while (0); \
-  __rv; \
-})
-
-/** Direct (L-assignable) reference to the value referenced by p_it.
+ ** @return
+ ** OML_E_NOT_FOUND if the iterator is past the last element in the list.
  **
- ** @note If the iterator is not valid, behaviour is unspecified.
+ ** @see oml_list_set()
  **/
-#define oml_list_value(this, p_it) ({ \
-  typeof((*(p_it))->value) *__p_value; \
-  if (*(p_it) == NULL) \
-    __p_value = &(this)->p_head->value; \
-  else \
-    __p_value = &(*(p_it))->p_next->value; \
-  *__p_value; \
-})
+#define oml_list_get(this, p_it, p_value) ({		\
+      oml_rv __rv = OML_OK;				\
+      do {						\
+	if (! oml_list_has_value((this), (p_it))) {	\
+	  __rv = OML_E_NOT_FOUND;			\
+	  break;					\
+	}						\
+	if (*(p_it) == NULL)				\
+	  *(p_value) = (this)->p_head->value;		\
+	else						\
+	  *(p_value) = (*(p_it))->p_next->value;	\
+      } while (0);					\
+      __rv;						\
+    })
+
+#define oml_list_set(this, p_it, p_value) ({		\
+      oml_rv __rv = OML_OK;				\
+      do {						\
+	if (! oml_list_has_value((this), (p_it))) {	\
+	  __rv = OML_E_NOT_FOUND;			\
+	  break;					\
+	}						\
+	if (*(p_it) == NULL)				\
+	  (this)->p_head->value = *(p_value);		\
+	else						\
+	  (*(p_it))->p_next->value = *(p_value);	\
+      } while (0);					\
+      __rv;						\
+    })
 
 /** Get an iterator positioned past the last element. **/
 #define oml_list_end(this, p_it) ({ \

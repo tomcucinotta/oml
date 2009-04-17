@@ -49,7 +49,7 @@
  ** @return
  **   OML_OK or OML_E_EMPTY
  **/
-#define oml_vstack_front(this, p_value) oml_vector_front(this, p_value)
+#define oml_vstack_peek(this) (oml_vector_back(this))
 
 /** Pop from the vstack the last pushed value and return it.
  **
@@ -89,6 +89,6 @@
  **
  ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
  **/
-#define oml_vstack_value(this, p_it) oml_vector_value((this), (p_it))
+#define oml_vstack_get(this, p_it, p_value) oml_vector_get((this), (p_it), (p_value))
 
 #endif

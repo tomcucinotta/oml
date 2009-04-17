@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
   test_const_iterator_rev();
 
   test_insert();
-  test_del();
+  //test_del();
 
   oml_chk_exit(oml_mem_clean());
   printf("Test successful\n");

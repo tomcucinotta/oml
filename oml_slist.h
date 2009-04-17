@@ -65,7 +65,7 @@
       __rv = OML_E_EMPTY; \
       break; \
     } \
-    if (p_value) \
+    if ((p_value) != NULL) \
       *(p_value) = (this)->p_head->value; \
   } while (0); \
   __rv; \

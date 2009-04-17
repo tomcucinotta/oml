@@ -114,7 +114,7 @@
       __rv = OML_E_EMPTY; \
       break; \
     } \
-    if (p_value) \
+    if ((p_value) != NULL)			   \
       *(p_value) = (this)->elems[(this)->del_pos]; \
   } while (0); \
   __rv; \
@@ -136,7 +136,7 @@
       __rv = OML_E_EMPTY; \
       break; \
     } \
-    if (p_value) \
+    if ((p_value) != NULL) \
       *(p_value) = (this)->elems[(this)->del_pos]; \
     (this)->del_pos = ((this)->del_pos + 1) % (this)->max_num_elems; \
     (this)->num_elems--; \

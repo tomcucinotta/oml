@@ -81,10 +81,16 @@
 /** Move the iterator one element down the lstack. */
 #define oml_lstack_next(this, p_it) oml_list_next((this), (p_it))
 
-/** Retrieve the next element in the lstack iteration, if any.
+/** Retrieve the next element in the lstack iteration, if any. **/
+#define oml_lstack_value(this, p_it) oml_list_value((this), (p_it))
+
+/** Retrieve and store in p_value the element referenced to by the iterator p_it.
  **
- ** @return OML_E_NOT_FOUND if there is no next element in the iteration.
+ ** @return
+ ** OML_E_NOT_FOUND if the iterator is past the last element in the lstack.
+ **
+ ** @see oml_lstack_value()
  **/
-#define oml_lstack_get_next(this, p_it, p_value) oml_list_get_next((this), (p_it), (p_value))
+#define oml_lstack_get(this, p_it, p_value) (oml_list_get((this), (p_it), (p_value)))
 
 #endif

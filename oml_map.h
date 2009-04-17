@@ -90,14 +90,17 @@
     typeof(*((this)->p_it)) it; \
     __rv = oml_list_find_eq_param(&((this)->elems[_a_pos]), _value, &it, oml_map_node_eq, _op_key_eq); \
     if (__rv == OML_E_NOT_FOUND) { \
-      typeof(oml_list_value(&((this)->elems[_a_pos]), &it)) _pair; \
+      oml_list_value_type(&((this)->elems[_a_pos]))_pair;	\
       oml_pair_init(&_pair, _key, _value); \
       __rv = oml_list_push_front(&((this)->elems[_a_pos]), _pair); \
       if (__rv != OML_OK) \
         break; \
       oml_list_begin(&((this)->elems[_a_pos]), &it); \
     } else { \
-      oml_pair_second(&oml_list_value(&((this)->elems[_a_pos]), &it)) = _value; \
+      typeof(&((this)->elems[_a_pos])) p_list = &((this)->elems[_a_pos]); \
+      oml_list_value_type( p_list ) __p;				\
+      oml_list_get( p_list, &it, &__p );				\
+      oml_pair_second( &__p ) = _value;					\
     } \
     (this)->num_elems++; \
   } while (0); \
