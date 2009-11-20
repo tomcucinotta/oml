@@ -7,8 +7,9 @@
  ** Sample usage:
  **
  ** oml_class_declare(myClass) {
+ **   oml_vtable(myClass);		// Optional, class has virtual methos
  **   oml_class_extend(parentClass);	// Optional
- **   int x;
+ **   oml_member(int, x);		// Member declaration
  ** };
  **
  ** oml_class_vtable(myclass) {
@@ -27,14 +28,21 @@
  ** 
  **/
 
-
-
 #define oml_class_declare(class_name) \
   typedef struct class_name class_name; \
   struct class_name 
 
+#define oml_class_vtable(class_name) \
+  struct class_name ##_vtable
+
+#define oml_vtable(class_name) \
+  struct class_name ##_vtable vtable
+
 /** With ms-extensions enabled, an unnamed struct could be used here **/
 #define oml_class_extend(base_type) base_type base
+
+#define oml_class_member(type, var) \
+  type var
 
 #define oml_meth_declare(class, rv, meth_name, args...) \
   oml_func_declare(rv, meth_name, class *this, args)
@@ -44,5 +52,8 @@
 
 #define oml_meth_call(instance, method, args...) \
   method(instance, args)
+
+#define oml_vmeth_call(instance, method, args...) \
+  instance->vtable->method(instance, args)
 
 #endif /* OML_CLASS_H_ */

@@ -37,13 +37,13 @@ int main(int argc, char **argv) {
   printf("Size of vstack: %d\n", oml_vstack_size(&h));
   oml_chk_exit(oml_vstack_size(&h) == 4);
 
-  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 3));
+  oml_chk_exit(oml_vstack_peek(&h) == 3);
   oml_chk_ok_exit(oml_vstack_pop(&h));
-  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 1));
+  oml_chk_exit(oml_vstack_peek(&h) == 1);
   oml_chk_ok_exit(oml_vstack_pop(&h));
-  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 7));
+  oml_chk_exit(oml_vstack_peek(&h) == 7);
   oml_chk_ok_exit(oml_vstack_pop(&h));
-  oml_chk_exit((oml_vstack_peek(&h, &v) == OML_OK) && (v == 4));
+  oml_chk_exit(oml_vstack_peek(&h) == 4);
   oml_chk_ok_exit(oml_vstack_pop(&h));
   printf("Size of vstack: %d\n", oml_vstack_size(&h));
   oml_chk_exit(oml_vstack_size(&h) == 0);
@@ -69,13 +69,13 @@ int main(int argc, char **argv) {
   printf("VStack dump:\n");
   oml_vstack_begin(&h, &it);
   for (; oml_vstack_has_value(&h, &it); oml_vstack_next(&h, &it)) {
-    v = oml_vstack_value(&h, &it);
+    oml_chk_ok_exit(oml_vstack_get(&h, &it, &v));
     printf("  List elem: %d\n", v);
   }
 
   for (i = 0; i < SIZE; ++i) {
     oml_chk_exit(! oml_vstack_empty(&h));
-    oml_chk_ok_exit(oml_vstack_peek(&h, &v));
+    v = oml_vstack_peek(&h);
     oml_chk_ok_exit(oml_vstack_pop(&h));
     printf("Extracted: %d, expected: %d\n", v, values[SIZE - 1 - i]);
     oml_chk_exit(v == values[SIZE - 1 - i]);

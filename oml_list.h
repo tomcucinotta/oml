@@ -356,10 +356,10 @@
   oml_rv __rv = OML_OK; \
   do { \
     typeof((this)->p_head) it; \
-    __rv = oml_find((this), _value, &it); \
+    __rv = oml_list_find((this), _value, &it); \
     if (__rv != OML_OK) \
       break; \
-    __rv = oml_remove((this), &it); \
+    __rv = oml_list_remove((this), &it); \
   } while (0); \
   __rv; \
 })
