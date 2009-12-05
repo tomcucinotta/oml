@@ -4,10 +4,10 @@ OPEN MACRO LIBRARY - Version 0.3.0
 
 Description
 ------------------------------------------------------------
-Open Macro Library is a library of highly reusable C macros providing
-a set of well-designed commonly needed functionality to C developers,
-like logging and debugging helpers, containers, sorting and other
-algorithms.
+Open Macro Library is a library of highly reusable C macros
+providing a set of well-designed commonly needed functionality
+to C developers, like logging and debugging helpers, containers,
+sorting and other algorithms.
 
 Specifically, a simple to use API is planned to be designed and
 implemented that exposes to applications the following functionality:
