@@ -16,6 +16,7 @@
 #include "oml_common.h"
 #include "oml_list.h"
 #include "oml_list_find.h"
+#include "oml_dump.h"
 
 /** Define set related types: use this macro only once per compilation unit */
 #define oml_define_set(value_type) \
@@ -84,7 +85,6 @@
   do { \
     typeof(_value) __set_value = (_value); \
     int _set_pos = oml_default_hash(__set_value) % ((this)->num_positions); \
-    oml_list_iterator(int) it2; \
     typeof(*((this)->p_it)) it; \
     __rv = oml_list_find_eq(&((this)->elems[_set_pos]), __set_value, &it, _op_value_eq); \
     if (__rv == OML_E_NOT_FOUND) { \
@@ -107,13 +107,9 @@
   do { \
     typeof(_value) __set_value = (_value); \
     int _set_pos = oml_default_hash(__set_value) % ((this)->num_positions); \
-    oml_list_iterator(int) it2; \
-    typeof(*((this)->p_it)) it; \
-    __rv = oml_list_find_eq(&((this)->elems[_set_pos]), __set_value, &it, _op_value_eq); \
-    if (__rv != OML_OK) \
-      break; \
-    __rv = oml_list_del(&((this)->elems[_set_pos]), &it); \
-    (this)->num_elems--; \
+    __rv = oml_list_del(&((this)->elems[_set_pos]), __set_value); \
+    if (__rv == OML_OK)						  \
+      (this)->num_elems--;					  \
   } while (0); \
   __rv; \
 })

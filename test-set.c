@@ -12,6 +12,9 @@ oml_set(int) h;
 #define SET_BITS 3
 #define SET_SIZE (1 << SET_BITS)
 
+#define NUM_VALUES 1000
+int values[NUM_VALUES];
+
 int main(int argc, char **argv) {
   int v;
   int num_elems;
@@ -46,30 +49,26 @@ int main(int argc, char **argv) {
   printf(")\n");
   oml_chk_exit(num_elems == oml_set_size(&h));
 
-  oml_chk_ok_exit(oml_set_del(&h, 60)); // Delete one item
-  oml_chk_ok_exit(oml_set_size(&h) == 4);
   oml_chk_ok_exit(oml_set_del(&h, 35)); // Delete one item
+  oml_chk_exit(oml_set_size(&h) == 4);
+  oml_chk_ok_exit(oml_set_del(&h, 60)); // Delete one item
   oml_chk_ok_exit(oml_set_del(&h, 12)); // Delete one item
-  oml_chk_ok_exit(oml_set_del(&h, 5)); // Delete one item
+  oml_chk_exit(oml_set_del(&h, 12) == OML_E_NOT_FOUND); // Attempt to delete already deleted item
+  oml_chk_ok_exit(oml_set_del(&h, 5));  // Delete one item
+  oml_chk_exit(oml_set_size(&h) == 1);
+  oml_chk_ok_exit(oml_set_del(&h, 20));  // Delete one item
   oml_chk_exit(oml_set_size(&h) == 0);
 
-/*   int i; */
-/*   for (i = 0; i < SET_SIZE; i++) { */
-/*     int rnd = 1 + (int) (100.0 * (rand() / (RAND_MAX + 1.0))); */
-/*     oml_chk_ok_exit(oml_set_add(&h, rnd, rnd)); */
-/*   } */
-/*   if (oml_set_add(&h, 5, 25) != OML_E_FULL) { */
-/*     printf("Should have experienced an error on full set\n"); */
-/*     return -1; */
-/*   } */
+  int i;
+  for (i = 0; i < sizeof(values)/sizeof(values[0]); i++) {
+    values[i] = 1 + (int) (100.0 * (rand() / (RAND_MAX + 1.0)));
+    oml_chk_ok_exit(oml_set_add(&h, values[i]));
+  }
 
-/*   for (i = 0; i < SET_SIZE; i++) */
-/*     oml_chk_ok_exit(oml_set_del_min(&h)); */
-
-/*   if (oml_set_del_min(&h) != OML_E_EMPTY) { */
-/*     printf("Should have experienced an error on empty set\n"); */
-/*     return -1; */
-/*   } */
+  for (i = 0; i < sizeof(values)/sizeof(values[0]); i++) {
+    oml_set_del(&h, values[i]);
+  }
+  oml_chk_exit(oml_set_size(&h) == 0);
 
   oml_chk_ok_exit(oml_set_cleanup(&h));
 
