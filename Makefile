@@ -96,6 +96,7 @@ dep:
 oml_debug.o: oml_debug.h
 oml_malloc.o: oml_debug.h oml_malloc.h
 oml_scope.o: oml_scope.h
+test-class-serialize.o: test-myclass.h
 test-eheap.o: oml_debug.h oml_eheap.h oml_malloc.h oml_common.h
 test-func.o: oml_debug.h oml_func.h
 test-heap.o: oml_debug.h oml_heap.h oml_malloc.h oml_common.h
@@ -104,13 +105,14 @@ test-lstack.o: oml_debug.h oml_lstack.h oml_list.h oml_malloc.h
 test-lstack.o: oml_list_find.h oml_common.h
 test-map.o: oml_debug.h oml_map.h oml_malloc.h oml_common.h oml_pair.h
 test-map.o: oml_list.h oml_list_find.h
+test-oml-scope.o: oml_scope.h
 test-pair.o: oml_debug.h oml_pair.h oml_common.h
 test-queue.o: oml_debug.h oml_vqueue.h oml_malloc.h
 test-scope.o: oml_scope.h
 test-scoped-list.o: oml_scoped_list.h oml_scope.h oml_list.h oml_debug.h
 test-scoped-list.o: oml_malloc.h oml_list_find.h oml_common.h
 test-set.o: oml_debug.h oml_set.h oml_malloc.h oml_common.h oml_list.h
-test-set.o: oml_list_find.h
+test-set.o: oml_list_find.h oml_dump.h oml_foreach.h
 test-svector.o: oml_debug.h oml_svector.h oml_malloc.h
 test-sync-nest.o: oml_debug.h
 test-sync.o: oml_sync.h oml_debug.h oml_func.h
