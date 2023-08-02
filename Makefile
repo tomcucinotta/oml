@@ -5,6 +5,7 @@ LIB_SRCS=$(patsubst test-%.c,,$(wildcard *.c oml_exceptions-dlex/*.c))
 LIB_OBJS=$(patsubst %.c,%.o,$(LIB_SRCS))
 OML_LIB=liboml.so
 CFLAGS+=-Wall -Wformat -fPIC -std=gnu99 -I. -Ioml_exceptions-dlex
+LDLIBS=-L. -loml -lrt
 
 all: lib $(TEST_PROGS)
 
@@ -63,7 +64,7 @@ $(OML_LIB): $(LIB_OBJS)
 	@echo "#endif /* __$(shell echo $(@:.h=) | tr [:lower:] [:upper:])__ */ " >> $@
 
 test-%: test-%.o
-	gcc $(CFLAGS) -L. -loml -lrt $< -o $@
+	gcc $(CFLAGS) $< -o $@ $(LDLIBS)
 
 %.o: %.c
 	gcc $(CFLAGS) -c $< -o $@
