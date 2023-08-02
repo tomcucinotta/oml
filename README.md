@@ -1,2 +1,0 @@
-# oml
-Open Macro Library
