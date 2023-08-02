@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/examples
+END
+ex_set_terminate.c
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_set_terminate.c
+END
+ex_overview.c
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_overview.c
+END
+ex_goto.c
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_goto.c
+END
+ex_volatile.c
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_volatile.c
+END
+ex_return.c
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_return.c
+END
+ex_module.c
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_module.c
+END
+ex_minimal.c
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_minimal.c
+END
+semaphore.c
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/semaphore.c
+END
+queue.c
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/queue.c
+END
+ex_rethrow.c
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_rethrow.c
+END
+ex_module.h
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_module.h
+END
+ex_nofinally.c
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_nofinally.c
+END
+semaphore.h
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/semaphore.h
+END
+queue.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/queue.h
+END
+test-ex.c
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/examples/test-ex.c
+END
+ex_finally.c
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/ex_finally.c
+END
+nofinally.c
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/examples/nofinally.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/examples/Makefile
+END
+test-ex-deadline.c
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/examples/test-ex-deadline.c
+END

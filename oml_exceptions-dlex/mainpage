@@ -1,0 +1,74 @@
+/*!  \mainpage Package for C Hierarchical Exception Handling Library
+
+\section index Index
+
+	\ref intro
+
+	\ref install
+
+	\ref usage
+
+ \section intro Introduction
+ 
+	This package lets you use exception handling mechanims in Ansi C by means of a few number of 
+	 easly portable macros and functions.
+ 
+  
+	Knowing exception syntax of Java or C++ is 99% of the know-how needed to work with this package.
+	In fact, the syntax mimics the one of those languages.
+
+\section insight An Exception World Insight
+
+	\subsection why Why should I use exceptions?
+
+		During normal program execution, many events can happen which we could classify as exceptional.
+		An error could be caused by a file containing incorrect information, a bad network connection or by an invalid
+		array or by an access to an indefinte reference in the code. 
+		
+		Ignoring these events often means to leave the program in an inconsistent state.
+		
+		Postponing detection or management of those conditions may make it difficult, if not impossible, to reset a consistent state.
+
+\section install Installation
+
+	You have just to copy  two files in your source/include tree (exception.h, exception.c) and compile and link 
+	the source file exception.c.
+
+\subsection step1 Step 1: Opening the box
+
+
+
+\section usage Usage
+
+	Have a look at this code fragment:
+
+	\code
+
+	try 
+	{
+		...
+		if (error_condition)
+			throw (exception);
+		...
+	}
+	finally 
+	{
+		/* code that is always executed */
+	}
+	handle
+		when(ex1) {
+			/* code that is executed only if raised exception is 'ex1' */
+		}
+		when(ex2) {
+			/* code that is executed only if raised exception is 'ex2' */
+		}
+	end
+
+	\endcode
+
+	\section bugs BUGS
+
+	No bugs are known at the moment. If you find any, please notify them on the Open Macro Library
+	mailing list. Find out how to subscribe on the project website: http://oml.sourceforge.net
+
+*/

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions
+END
+mainpage
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/mainpage
+END
+COPYING.LESSER
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/COPYING.LESSER
+END
+Doxygen.template
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/Doxygen.template
+END
+oml_exceptions.c
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/oml_exceptions.c
+END
+oml_exceptions_namespace.h
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/oml/!svn/ver/29/branches/dlexception/oml_exceptions/oml_exceptions_namespace.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/Makefile
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/oml/!svn/ver/22/branches/dlexception/oml_exceptions/README
+END
+oml_exceptions.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/oml/!svn/ver/32/branches/dlexception/oml_exceptions/oml_exceptions.h
+END
