@@ -115,6 +115,9 @@
 #define oml_map_add(this, _key, _value) oml_map_add_eq((this), (_key), (_value), oml_default_eq)
 
 
+/**
+ ** Write corresponding value of _key in p_value
+ **/
 #define oml_map_get_eq(this, _key, p_value, _op_key_eq) ({ \
   oml_rv __rv = OML_OK; \
   do { \
