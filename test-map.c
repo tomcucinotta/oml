@@ -32,6 +32,11 @@ int main(int argc, char **argv) {
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 5);
 
+  int v;
+  oml_chk_ok_exit(oml_map_get(&h, 4, &v));
+  printf("Get val: %d\n", v);
+  oml_chk_exit(v == 15);
+
 /*   printf("Map dump:\n"); */
 /*   while (oml_map_size(&h) > 0) { */
 /*     oml_chk_ok_exit(oml_map_get_min(&h, &k, &v)); */

@@ -106,6 +106,26 @@
   __rv; \
 })
 
+
+#define oml_map_get(this, _key, p_value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    typeof(_key) __key = (_key); \
+    int _a_pos = oml_default_hash(__key) % ((this)->max_num_elems); \
+    typeof(*((this)->p_it)) it; \
+    __rv = oml_list_find_eq_param(&((this)->elems[_a_pos]), _key, &it, oml_map_node_eq, oml_default_eq); \
+    if (__rv == OML_E_NOT_FOUND) { \
+      break; \
+    } else { \
+      typeof(&((this)->elems[_a_pos])) p_list = &((this)->elems[_a_pos]); \
+      oml_list_value_type( p_list ) __p;				\
+      oml_list_get( p_list, &it, &__p );				\
+  		*(p_value) = oml_pair_second(&__p);       \
+    } \
+  } while (0); \
+  __rv; \
+})
+
 /**
  * Add the pair (_key, _value) to the map, and store the corresponding
  * removal iterator in *_p_it.
