@@ -36,7 +36,8 @@ archive for details.
 Build
 ------------------------------------------------------------
 Just type make, then make test if you want to run the automatic
-tests. No install procedure has been setup, so far.
+tests. Use install.sh and uninstall.sh to (un)install liboml.so 
+and the oml headers on your system.
 
 
 Support
