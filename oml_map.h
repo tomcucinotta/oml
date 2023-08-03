@@ -101,6 +101,7 @@
       oml_list_value_type( p_list ) __p;				\
       oml_list_get( p_list, &it, &__p );				\
       oml_pair_second( &__p ) = _value;					\
+      oml_list_set( p_list, &it, &__p );        \
     } \
   } while (0); \
   __rv; \
