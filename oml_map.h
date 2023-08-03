@@ -33,6 +33,9 @@
     oml_list_iterator(oml_map_node_##key_type ##_##value_type) *p_it; \
   } oml_map_##key_type ##_##value_type
 
+#define oml_map_key_type(this) typeof((this)->elems[0].p_head->value.first)
+#define oml_map_value_type(this) typeof((this)->elems[0].p_head->value.second)
+
 /** Template-like type for a map node (users should not use this) */
 #define oml_map_node(key_type, value_type) \
   struct oml_map_node_##key_type ##_##value_type
@@ -58,7 +61,7 @@
     (this)->max_num_elems = 1 << N; \
     (this)->num_elems = 0; \
     for (_pos = 0; _pos < (this)->max_num_elems; _pos++) \
-      oml_list_init(&(this)->elems[_pos]);		 \
+      oml_list_init(&(this)->elems[_pos]); \
   } while (0); \
   __rv; \
 })
@@ -68,7 +71,7 @@
   do { \
     int _pos; \
     for (_pos = 0; _pos < (this)->max_num_elems; _pos++) \
-      oml_list_cleanup(&(this)->elems[_pos]);		 \
+      oml_list_cleanup(&(this)->elems[_pos]); \
     oml_free((this)->elems); \
     (this)->num_elems = (this)->max_num_elems = 0; \
   } while (0); \
@@ -90,18 +93,18 @@
     typeof(*((this)->p_it)) it; \
     __rv = oml_list_find_eq_param(&((this)->elems[_a_pos]), _key, &it, oml_map_node_eq, _op_key_eq); \
     if (__rv == OML_E_NOT_FOUND) { \
-      oml_list_value_type(&((this)->elems[_a_pos]))_pair;	\
+      oml_list_value_type(&((this)->elems[_a_pos]))_pair; \
       oml_pair_init(&_pair, _key, _value); \
       __rv = oml_list_push_front(&((this)->elems[_a_pos]), _pair); \
       if (__rv != OML_OK) \
         break; \
-      (this)->num_elems++;                           \
+      (this)->num_elems++; \
     } else { \
       typeof(&((this)->elems[_a_pos])) p_list = &((this)->elems[_a_pos]); \
-      oml_list_value_type( p_list ) __p;				\
-      oml_list_get( p_list, &it, &__p );				\
-      oml_pair_second( &__p ) = _value;					\
-      oml_list_set( p_list, &it, &__p );        \
+      oml_list_value_type( p_list ) __p; \
+      oml_list_get( p_list, &it, &__p ); \
+      oml_pair_second( &__p ) = _value; \
+      oml_list_set( p_list, &it, &__p ); \
     } \
   } while (0); \
   __rv; \
@@ -129,9 +132,9 @@
       break; \
     } else { \
       typeof(&((this)->elems[_a_pos])) p_list = &((this)->elems[_a_pos]); \
-      oml_list_value_type( p_list ) __p;				\
-      oml_list_get( p_list, &it, &__p );				\
-      *(p_value) = oml_pair_second(&__p);       \
+      oml_list_value_type( p_list ) __p; \
+      oml_list_get( p_list, &it, &__p ); \
+      *(p_value) = oml_pair_second(&__p); \
     } \
   } while (0); \
   __rv; \
@@ -142,38 +145,97 @@
 /** Return the current size of the map */
 #define oml_map_size(this) ((this)->num_elems)
 
-/* #define oml_map_begin(this, p_it) \ */
-/*   do { \ */
-/*     (p_it)->pos = 0; \ */
-    
-/*   } while (0) */
+#define oml_map_begin(this, p_it) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((this)->num_elems > 0) { \
+      (p_it)->pos = 0; \
+      while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0) \
+        (p_it)->pos++; \
+      oml_list_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+    } else { \
+      (p_it)->pos = -1; \
+      __rv = OML_E_EMPTY; \
+    } \
+  } while (0); \
+  __rv; \
+})
 
-/* #define oml_map_has_value(this, p_it) \ */
-/*   ((p_it)->pos < (this)->num_elems) */
+#define oml_map_has_value(this, p_it) \
+  ((p_it)->pos != -1)
 
-/* #define oml_map_get_next(this, p_it, p_key, p_val) ({ \ */
-/*   oml_rv __rv = OML_OK; \ */
-/*   do { \ */
-/*     if ((p_it)->pos >= (this)->num_elems) { \ */
-/*       __rv = OML_E_NOT_FOUND; \ */
-/*       break; \ */
-/*     } \ */
-/*     *(p_key) = (this)->elems[(p_it)->pos].key; \ */
-/*     *(p_val) = (this)->elems[(p_it)->pos].value; \ */
-/*   } while (0); \ */
-/*   __rv; \ */
-/* }) */
+#define oml_map_iterator_get(this, p_it, p_key, p_val) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((p_it)->pos == -1) { \
+      __rv = OML_E_INVALID_PARAM; \
+      break; \
+    } \
+    typeof(&((this)->elems[(p_it)->pos])) p_list = &((this)->elems[(p_it)->pos]); \
+    oml_list_value_type( p_list ) __p; \
+    oml_list_get( p_list, &(p_it)->it, &__p ); \
+    *(p_key) = oml_pair_first(&__p); \
+    *(p_val) = oml_pair_second(&__p); \
+  } while (0); \
+  __rv; \
+})
 
-/* #define oml_map_next(this, p_it) ({ \ */
-/*   oml_rv __rv = OML_OK; \ */
-/*   do { \ */
-/*     if ((p_it)->pos >= (this)->num_elems) { \ */
-/*       __rv = OML_E_NOT_FOUND; \ */
-/*       break; \ */
-/*     } \ */
-/*     (p_it)->pos++; \ */
-/*   } while (0); \ */
-/*   __rv; \ */
-/* }) */
+#define oml_map_iterator_set(this, p_it, value) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((p_it)->pos == -1) { \
+      __rv = OML_E_INVALID_PARAM; \
+      break; \
+    } \
+    typeof(&((this)->elems[(p_it)->pos])) p_list = &((this)->elems[(p_it)->pos]); \
+    oml_list_value_type( p_list ) __p; \
+    oml_list_get( p_list, &(p_it)->it, &__p ); \
+    oml_pair_second(&__p) = value; \
+    oml_list_set( p_list, &(p_it)->it, &__p ); \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_map_next(this, p_it) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((p_it)->pos == -1) \
+      __rv = OML_E_NOT_FOUND; \
+    oml_list_next(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+    if (oml_list_has_value(&(this)->elems[(p_it)->pos], &(p_it)->it)) \
+      break; \
+    do \
+      (p_it)->pos++; \
+    while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0 && (p_it)->pos < (this)->max_num_elems); \
+    if ((p_it)->pos < (this)->max_num_elems) \
+      oml_list_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+    else { \
+      __rv = OML_E_NOT_FOUND; \
+      (p_it)->pos = -1; \
+      break; \
+    } \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_map_find(this, value, p_it) ({       \
+  oml_rv __rv = OML_E_NOT_FOUND; \
+  do { \
+    if ((p_it)->pos == -1) \
+      __rv = OML_E_NOT_FOUND; \
+    for (oml_map_begin((this), (p_it)); \
+         oml_map_has_value((this), (p_it));  \
+         oml_map_next((this), (p_it))) { \
+      typeof(value) __val; \
+      oml_map_key_type(this) __key; \
+      oml_map_iterator_get((this), (p_it), &__key, &__val);   \
+      if (value == __val) { \
+        __rv = OML_OK; \
+        break; \
+      } \
+    } \
+  } while (0);                                   \
+  __rv; \
+})
 
 #endif /* __OML_MAP_H__ */

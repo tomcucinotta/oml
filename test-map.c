@@ -12,6 +12,16 @@ oml_map(int, int) h;
 #define MAP_BITS 3
 #define MAP_SIZE (1 << MAP_BITS)
 
+void test_iter_dump(oml_map(int, int) *p) {
+  printf("Map dump:\n");
+  oml_map_iterator(int, int) it;
+  for (oml_map_begin(p, &it); oml_map_has_value(p, &it); oml_map_next(p, &it)) {
+    int k, v;
+    oml_chk_ok_exit(oml_map_iterator_get(p, &it, &k, &v));
+    printf("  (%d, %d)\n", k, v);
+  }
+}
+
 int main(int argc, char **argv) {
   oml_chk_ok_exit(oml_map_init(&h, MAP_BITS));
 
@@ -39,33 +49,27 @@ int main(int argc, char **argv) {
 
   int k = 99;
   printf("key %d is not present in map\n", k);
-  oml_chk_exit(oml_map_get(&h, k, &v) == OML_E_NOT_FOUND); 
+  oml_chk_exit(oml_map_get(&h, k, &v) == OML_E_NOT_FOUND);
 
+  test_iter_dump(&h);
 
-/*   printf("Map dump:\n"); */
-/*   while (oml_map_size(&h) > 0) { */
-/*     oml_chk_ok_exit(oml_map_get_min(&h, &k, &v)); */
-/*     printf("Min map elem: %d, %d\n", k, v); */
-/*     oml_chk_ok_exit(oml_map_del_min(&h)); */
-/*   } */
+  oml_map_iterator(int, int) it;
 
-/*   int i; */
-/*   for (i = 0; i < MAP_SIZE; i++) { */
-/*     int rnd = 1 + (int) (100.0 * (rand() / (RAND_MAX + 1.0))); */
-/*     oml_chk_ok_exit(oml_map_add(&h, rnd, rnd)); */
-/*   } */
-/*   if (oml_map_add(&h, 5, 25) != OML_E_FULL) { */
-/*     printf("Should have experienced an error on full map\n"); */
-/*     return -1; */
-/*   } */
+  oml_chk_exit(oml_map_find(&h, 99, &it) == OML_E_NOT_FOUND);
 
-/*   for (i = 0; i < MAP_SIZE; i++) */
-/*     oml_chk_ok_exit(oml_map_del_min(&h)); */
+  oml_chk_ok_exit(oml_map_find(&h, 60, &it));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
+  oml_chk_exit(k == 12);
+  oml_chk_exit(v == 60);
+  oml_chk_ok_exit(oml_map_iterator_set(&h, &it, 33));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
+  oml_chk_exit(v == 33);
+  oml_chk_ok_exit(oml_map_get(&h, 12, &v));
+  oml_chk_exit(v == 33);
 
-/*   if (oml_map_del_min(&h) != OML_E_EMPTY) { */
-/*     printf("Should have experienced an error on empty map\n"); */
-/*     return -1; */
-/*   } */
+  oml_chk_exit(oml_map_size(&h) == 5);
+
+  test_iter_dump(&h);
 
   oml_chk_ok_exit(oml_map_cleanup(&h));
 
