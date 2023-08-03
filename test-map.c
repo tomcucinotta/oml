@@ -28,6 +28,10 @@ int main(int argc, char **argv) {
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 5);
 
+  oml_chk_ok_exit(oml_map_add(&h, 4, 15));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 5);
+
 /*   printf("Map dump:\n"); */
 /*   while (oml_map_size(&h) > 0) { */
 /*     oml_chk_ok_exit(oml_map_get_min(&h, &k, &v)); */
