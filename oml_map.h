@@ -142,38 +142,62 @@
 /** Return the current size of the map */
 #define oml_map_size(this) ((this)->num_elems)
 
-/* #define oml_map_begin(this, p_it) \ */
-/*   do { \ */
-/*     (p_it)->pos = 0; \ */
-    
-/*   } while (0) */
+#define oml_map_begin(this, p_it) ({                          \
+  oml_rv __rv = OML_OK;                                       \
+  do {                                                        \
+    if ((this)->num_elems > 0) {                              \
+      (p_it)->pos = 0;                                        \
+      while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0) \
+        (p_it)->pos++;                                        \
+      oml_list_const_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+    } else {                                                  \
+      (p_it)->pos = -1;                                       \
+      __rv = OML_E_EMPTY;                                     \
+    }                                                         \
+  } while (0);                                                \
+  __rv;                                                       \
+})
 
-/* #define oml_map_has_value(this, p_it) \ */
-/*   ((p_it)->pos < (this)->num_elems) */
+#define oml_map_has_value(this, p_it) \
+  ((p_it)->pos != -1)
 
-/* #define oml_map_get_next(this, p_it, p_key, p_val) ({ \ */
-/*   oml_rv __rv = OML_OK; \ */
-/*   do { \ */
-/*     if ((p_it)->pos >= (this)->num_elems) { \ */
-/*       __rv = OML_E_NOT_FOUND; \ */
-/*       break; \ */
-/*     } \ */
-/*     *(p_key) = (this)->elems[(p_it)->pos].key; \ */
-/*     *(p_val) = (this)->elems[(p_it)->pos].value; \ */
-/*   } while (0); \ */
-/*   __rv; \ */
-/* }) */
+#define oml_map_get_iter(this, p_it, p_key, p_val) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if ((p_it)->pos == -1) { \
+      __rv = OML_E_NOT_FOUND; \
+      break; \
+    } \
+    typeof(&((this)->elems[(p_it)->pos])) p_list = &((this)->elems[(p_it)->pos]); \
+    oml_list_value_type( p_list ) __p;                                  \
+    oml_list_get( p_list, &(p_it)->it, &__p );                          \
+    *(p_key) = oml_pair_first(&__p);                                    \
+    *(p_val) = oml_pair_second(&__p);                                   \
+  } while (0); \
+  __rv; \
+})
 
-/* #define oml_map_next(this, p_it) ({ \ */
-/*   oml_rv __rv = OML_OK; \ */
-/*   do { \ */
-/*     if ((p_it)->pos >= (this)->num_elems) { \ */
-/*       __rv = OML_E_NOT_FOUND; \ */
-/*       break; \ */
-/*     } \ */
-/*     (p_it)->pos++; \ */
-/*   } while (0); \ */
-/*   __rv; \ */
-/* }) */
+#define oml_map_next(this, p_it) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    printf("pos: %d  max=%d\n", (p_it)->pos, (this)->max_num_elems);                   \
+    if ((p_it)->pos == -1) \
+      __rv = OML_E_NOT_FOUND; \
+    oml_list_next(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+    if (oml_list_has_value(&(this)->elems[(p_it)->pos], &(p_it)->it)) \
+      break; \
+    while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0 && (p_it)->pos < (this)->max_num_elems) \
+      (p_it)->pos++;                                                    \
+    printf("pos: %d, max=%d\n", (p_it)->pos, (this)->max_num_elems);                   \
+    if ((p_it)->pos < (this)->max_num_elems) \
+      oml_list_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+    else {         \
+      __rv = OML_E_NOT_FOUND; \
+      (p_it)->pos = -1; \
+      break; \
+    } \
+  } while (0); \
+  __rv; \
+})
 
 #endif /* __OML_MAP_H__ */

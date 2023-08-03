@@ -41,31 +41,13 @@ int main(int argc, char **argv) {
   printf("key %d is not present in map\n", k);
   oml_chk_exit(oml_map_get(&h, k, &v) == OML_E_NOT_FOUND); 
 
-
-/*   printf("Map dump:\n"); */
-/*   while (oml_map_size(&h) > 0) { */
-/*     oml_chk_ok_exit(oml_map_get_min(&h, &k, &v)); */
-/*     printf("Min map elem: %d, %d\n", k, v); */
-/*     oml_chk_ok_exit(oml_map_del_min(&h)); */
-/*   } */
-
-/*   int i; */
-/*   for (i = 0; i < MAP_SIZE; i++) { */
-/*     int rnd = 1 + (int) (100.0 * (rand() / (RAND_MAX + 1.0))); */
-/*     oml_chk_ok_exit(oml_map_add(&h, rnd, rnd)); */
-/*   } */
-/*   if (oml_map_add(&h, 5, 25) != OML_E_FULL) { */
-/*     printf("Should have experienced an error on full map\n"); */
-/*     return -1; */
-/*   } */
-
-/*   for (i = 0; i < MAP_SIZE; i++) */
-/*     oml_chk_ok_exit(oml_map_del_min(&h)); */
-
-/*   if (oml_map_del_min(&h) != OML_E_EMPTY) { */
-/*     printf("Should have experienced an error on empty map\n"); */
-/*     return -1; */
-/*   } */
+  printf("Map dump:\n");
+  oml_map_iterator(int, int) it;
+  for (oml_map_begin(&h, &it); oml_map_has_value(&h, &it); oml_map_next(&h, &it)) {
+    int k, v;
+    oml_chk_ok_exit(oml_map_get_iter(&h, &it, &k, &v));
+    printf("  (%d, %d)\n", k, v);
+  }
 
   oml_chk_ok_exit(oml_map_cleanup(&h));
 
