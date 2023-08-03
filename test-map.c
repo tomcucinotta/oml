@@ -37,6 +37,11 @@ int main(int argc, char **argv) {
   printf("Get val: %d\n", v);
   oml_chk_exit(v == 15);
 
+  int k = 99;
+  printf("key %d is not present in map\n", k);
+  oml_chk_exit(oml_map_get(&h, k, &v) == OML_E_NOT_FOUND); 
+
+
 /*   printf("Map dump:\n"); */
 /*   while (oml_map_size(&h) > 0) { */
 /*     oml_chk_ok_exit(oml_map_get_min(&h, &k, &v)); */
