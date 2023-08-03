@@ -96,7 +96,6 @@
       if (__rv != OML_OK) \
         break; \
       (this)->num_elems++;                           \
-      oml_list_begin(&((this)->elems[_a_pos]), &it); \
     } else { \
       typeof(&((this)->elems[_a_pos])) p_list = &((this)->elems[_a_pos]); \
       oml_list_value_type( p_list ) __p;				\
