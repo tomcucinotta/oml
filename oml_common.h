@@ -2,6 +2,7 @@
 #define _OML_COMMON_H_
 
 #include <stdint.h>
+#include <string.h>
 
 /** All ordered data types in OML use this default macro in order
  ** to compare sorting keys, unless the specific additional operations
@@ -25,6 +26,13 @@
 #  define oml_default_eq_dbg(a, b) (printf("Comparing %d and %d\n", (a), (b)), (a) == (b))
 #endif
 
+#ifndef oml_str_eq
+#  define oml_str_eq(a, b) ( strcmp(a,b) == 0 )
+#endif
+
+#ifndef oml_str_eq_dbg
+#  define oml_str_eq_dbg(a, b) ( printf("Comparing %s and %s\n", (a), (b)), strcmp(a,b) == 0 )
+#endif
 /** A quite good hash function (according to Wikipedia) **/
 static inline uint32_t joaat_hash_func(uint8_t *key, size_t len) {
   uint32_t hash = 0;
