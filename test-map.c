@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 oml_define_map(int,int);
+oml_define_map(double,int);
 
 oml_map(int, int) h;
 
@@ -20,6 +21,44 @@ void test_iter_dump(oml_map(int, int) *p) {
     oml_chk_ok_exit(oml_map_iterator_get(p, &it, &k, &v));
     printf("  (%d, %d)\n", k, v);
   }
+}
+
+#define double_eq_eps(a, b) (((a) - (b)) <= 0.01 && ((b) - (a)) <= 0.01)
+
+void test_map_double() {
+  oml_map(double, int) h;
+  oml_chk_ok_exit(oml_map_init(&h, MAP_BITS));
+
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 0);
+  oml_chk_ok_exit(oml_map_add(&h, 4.4, 20));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 1);
+
+  oml_chk_ok_exit(oml_map_add(&h, 7.7, 35));
+  oml_chk_ok_exit(oml_map_add(&h, 1.1, 5));
+  oml_chk_ok_exit(oml_map_add(&h, 12.12, 60));
+  oml_chk_ok_exit(oml_map_add(&h, 3.3, 12));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 5);
+
+  int val = 0.0;
+  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3 + 0.0001, &val, double_eq_eps));
+  oml_chk_exit(val == 12);
+  val = 0.0;
+  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3 - 0.0001, &val, double_eq_eps));
+  oml_chk_exit(val == 12);
+
+  printf("Map dump:\n");
+  oml_map_iterator(double, int) it;
+  for (oml_map_begin(&h, &it); oml_map_has_value(&h, &it); oml_map_next(&h, &it)) {
+    double k;
+    int v;
+    oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
+    printf("  (%g, %d)\n", k, v);
+  }
+
+  oml_chk_ok(oml_map_cleanup(&h));
 }
 
 int main(int argc, char **argv) {
@@ -72,6 +111,8 @@ int main(int argc, char **argv) {
   test_iter_dump(&h);
 
   oml_chk_ok_exit(oml_map_cleanup(&h));
+
+  test_map_double();
 
   printf("Test successful\n");
   return 0;
