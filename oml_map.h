@@ -147,9 +147,9 @@
   do {                                                        \
     if ((this)->num_elems > 0) {                              \
       (p_it)->pos = 0;                                        \
-      while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0) \
-        (p_it)->pos++;                                        \
       oml_list_const_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+      while (!oml_list_has_value(&(this)->elems[(p_it)->pos], &(p_it)->it) && (p_it)->pos < (this)->max_num_elems) \
+        (p_it)->pos++;                                        \
     } else {                                                  \
       (p_it)->pos = -1;                                       \
       __rv = OML_E_EMPTY;                                     \
