@@ -31,6 +31,12 @@ void test_const_iterator() {
     oml_chk_exit(v == values[i]);
     oml_list_const_next(&l, &it);
   }
+  i = 0;
+  for (oml_list_const_begin(&l, &it); oml_list_const_has_value(&l, &it); oml_list_const_next(&l, &it)) {
+    oml_chk_ok(oml_list_const_get(&l, &it, &v));
+    printf("Value: %d\n", v);
+    oml_chk_exit(v == values[i++]);
+  }
   oml_chk_ok_exit(oml_list_cleanup(&l));
 }
 
@@ -73,6 +79,12 @@ void test_iterator() {
     printf("Value: %d\n", v);
     oml_chk_exit(v == values[i]);
     oml_list_next(&l, &it);
+  }
+  i = 0;
+  for (oml_list_begin(&l, &it); oml_list_has_value(&l, &it); oml_list_next(&l, &it)) {
+    oml_chk_ok(oml_list_get(&l, &it, &v));
+    printf("Value: %d\n", v);
+    oml_chk_exit(v == values[i++]);
   }
   oml_chk_ok_exit(oml_list_cleanup(&l));
 }
