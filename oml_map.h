@@ -131,7 +131,7 @@
       typeof(&((this)->elems[_a_pos])) p_list = &((this)->elems[_a_pos]); \
       oml_list_value_type( p_list ) __p;				\
       oml_list_get( p_list, &it, &__p );				\
-  		*(p_value) = oml_pair_second(&__p);       \
+      *(p_value) = oml_pair_second(&__p);       \
     } \
   } while (0); \
   __rv; \
