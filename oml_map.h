@@ -186,12 +186,14 @@
     oml_list_next(&(this)->elems[(p_it)->pos], &(p_it)->it); \
     if (oml_list_has_value(&(this)->elems[(p_it)->pos], &(p_it)->it)) \
       break; \
-    while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0 && (p_it)->pos < (this)->max_num_elems) \
-      (p_it)->pos++;                                                    \
+    while ((p_it)->pos < (this)->max_num_elems) { \
+      (p_it)->pos++;                                                         \
+      oml_list_const_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
+      if (oml_list_has_value(&(this)->elems[(p_it)->pos], &(p_it)->it)) \
+        break; \
+    } \
     printf("pos: %d, max=%d\n", (p_it)->pos, (this)->max_num_elems);                   \
-    if ((p_it)->pos < (this)->max_num_elems) \
-      oml_list_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
-    else {         \
+    if ((p_it)->pos >= (this)->max_num_elems) { \
       __rv = OML_E_NOT_FOUND; \
       (p_it)->pos = -1; \
       break; \
