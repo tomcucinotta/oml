@@ -150,7 +150,7 @@ void test_map_str() {
   oml_chk_exit(oml_map_size(&h) == 2);
 
   int v;
-  oml_chk_ok_exit(oml_map_get_eq(&h, "key1", &v, oml_str_eq));
+  oml_chk_ok_exit(oml_map_get_eq(&h, "kkey1" + 1, &v, oml_str_eq));
   printf("Get val: %d\n", v);
   oml_chk_exit(v == 15);
 
