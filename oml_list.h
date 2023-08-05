@@ -182,7 +182,7 @@
   __rv; \
 })
 
-/** Direct (L-assignable) reference to the value referenced by p_it.
+/** Direct reference to the value referenced by p_it.
  **
  ** @note If the iterator is not valid, behaviour is unspecified.
  **/
@@ -257,6 +257,12 @@
       } while (0);					\
       __rv;						\
     })
+
+/** Direct (L-assignable) reference to the value referenced by p_it.
+ **
+ ** @note If the iterator is not valid, behaviour is unspecified.
+ **/
+#define oml_list_value(this, p_it) ((*(p_it) == NULL ? (this)->p_head : (*(p_it))->p_next)->value)
 
 #define oml_list_set(this, p_it, p_value) ({		\
       oml_rv __rv = OML_OK;				\

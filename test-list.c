@@ -156,6 +156,10 @@ void test_insert() {
   for (i = 0; i < SIZE; ++i) {
     oml_chk_ok_exit(oml_list_insert(&l, &it, values[i]));
     oml_chk_ok_exit(oml_list_get(&l, &it, &v));
+    printf("Value retrieved via get(): %d\n", v);
+    oml_chk_exit(v == values[i]);
+    v = oml_list_value(&l, &it);
+    printf("Value retrieved via value(): %d\n", v);
     oml_chk_exit(v == values[i]);
   }
   test_values_backward(&l);
