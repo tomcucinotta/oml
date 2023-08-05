@@ -141,7 +141,7 @@
 
 /** Get an iterator positioned on the head element
  **/
-#define oml_list_const_begin(this, p_it) ({ \
+#define oml_list_cbegin(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     *(p_it) = (this)->p_head; \
@@ -203,7 +203,7 @@
 
 /** Let the supplied iterator iterate over the entire collection **/
 #define oml_list_const_foreach(this, p_it)	\
-  for (oml_list_const_begin(this, p_it); oml_list_const_has_value(this, p_it); oml_list_const_next(this, p_it))
+  for (oml_list_cbegin(this, p_it); oml_list_const_has_value(this, p_it); oml_list_const_next(this, p_it))
 
 /* FORWARD R/W ITERATOR */
 

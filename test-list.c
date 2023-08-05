@@ -24,7 +24,7 @@ void test_const_iterator() {
     printf("Size of list: %d\n", oml_list_size(&l));
     oml_chk_exit(oml_list_size(&l) == i + 1);
   }
-  oml_chk_ok_exit(oml_list_const_begin(&l, &it));
+  oml_chk_ok_exit(oml_list_cbegin(&l, &it));
   for (i = 0; i < SIZE; ++i) {
     oml_chk_ok(oml_list_const_get(&l, &it, &v));
     printf("Value: %d\n", v);
@@ -32,7 +32,7 @@ void test_const_iterator() {
     oml_list_const_next(&l, &it);
   }
   i = 0;
-  for (oml_list_const_begin(&l, &it); oml_list_const_has_value(&l, &it); oml_list_const_next(&l, &it)) {
+  for (oml_list_cbegin(&l, &it); oml_list_const_has_value(&l, &it); oml_list_const_next(&l, &it)) {
     oml_chk_ok(oml_list_const_get(&l, &it, &v));
     printf("Value: %d\n", v);
     oml_chk_exit(v == values[i++]);
@@ -52,7 +52,7 @@ void test_const_iterator_rev() {
     printf("Size of list: %d\n", oml_list_size(&l));
     oml_chk_exit(oml_list_size(&l) == i + 1);
   }
-  oml_chk_ok_exit(oml_list_const_begin(&l, &it));
+  oml_chk_ok_exit(oml_list_cbegin(&l, &it));
   for (i = 0; i < SIZE; ++i) {
     oml_chk_ok(oml_list_const_get(&l, &it, &v));
     printf("Value: %d\n", v);
@@ -114,7 +114,7 @@ void test_iterator_rev() {
 void test_values_forward(oml_list(int) *pl) {
   oml_list_iterator(int) it;
   int i, v;
-  oml_chk_ok_exit(oml_list_const_begin(pl, &it));
+  oml_chk_ok_exit(oml_list_cbegin(pl, &it));
   for (i = 0; i < SIZE; ++i) {
     oml_chk_ok(oml_list_const_get(pl, &it, &v));
     printf("Value: %d\n", v);
@@ -129,7 +129,7 @@ void test_values_forward(oml_list(int) *pl) {
 void test_values_backward(oml_list(int) *pl) {
   oml_list_iterator(int) it;
   int i, v;
-  oml_chk_ok_exit(oml_list_const_begin(pl, &it));
+  oml_chk_ok_exit(oml_list_cbegin(pl, &it));
   for (i = 0; i < SIZE; ++i) {
     oml_chk_ok(oml_list_const_get(pl, &it, &v));
     printf("Value: %d\n", v);
