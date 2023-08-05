@@ -154,6 +154,11 @@ void test_map_str() {
   printf("Get val: %d\n", v);
   oml_chk_exit(v == 15);
 
+  char *s = "key1";
+  oml_chk_ok_exit(oml_map_get_eq(&h, s, &v, oml_str_eq));
+  printf("Get val: %d\n", v);
+  oml_chk_exit(v == 15);
+
   printf("key3 is not present in map\n");
   oml_chk_exit(oml_map_get(&h, "key3", &v) == OML_E_NOT_FOUND);
 
