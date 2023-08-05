@@ -141,13 +141,17 @@
 
 /** Get an iterator positioned on the head element
  **/
-#define oml_list_cbegin(this, p_it) ({ \
+#define oml_list_const_begin(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \
     *(p_it) = (this)->p_head; \
   } while (0); \
   __rv; \
 })
+
+/** Alias of oml_list_const_begin() */
+#define oml_list_cbegin(this, p_it) \
+  oml_list_const_begin((this), (p_it))
 
 /** Check if the iterator is dereferenceable (i.e. we may call oml_list_get() or oml_list_value()). **/
 #define oml_list_const_has_value(this, p_it) \
