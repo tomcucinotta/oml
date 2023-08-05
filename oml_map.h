@@ -221,23 +221,39 @@
   __rv; \
 })
 
-#define oml_map_find(this, value, p_it) ({       \
+#define oml_map_find(this, value, p_it) ({ \
   oml_rv __rv = OML_E_NOT_FOUND; \
+  typeof(value) __value = (value); \
   do { \
     if ((p_it)->pos == -1) \
       __rv = OML_E_NOT_FOUND; \
     for (oml_map_begin((this), (p_it)); \
          oml_map_has_value((this), (p_it));  \
          oml_map_next((this), (p_it))) { \
-      typeof(value) __val; \
-      oml_map_key_type(this) __key; \
-      oml_map_iterator_get((this), (p_it), &__key, &__val);   \
-      if (value == __val) { \
+      if (oml_map_value((this), (p_it)) == __value) { \
         __rv = OML_OK; \
         break; \
       } \
     } \
-  } while (0);                                   \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_map_find_eq(this, value, p_it, f_eq) ({  \
+  oml_rv __rv = OML_E_NOT_FOUND; \
+  typeof(value) __value = (value); \
+  do { \
+    if ((p_it)->pos == -1) \
+      __rv = OML_E_NOT_FOUND; \
+    for (oml_map_begin((this), (p_it)); \
+         oml_map_has_value((this), (p_it));  \
+         oml_map_next((this), (p_it))) { \
+      if (f_eq(oml_map_value((this), (p_it)), __value)) {       \
+        __rv = OML_OK; \
+        break; \
+      } \
+    } \
+  } while (0); \
   __rv; \
 })
 

@@ -11,10 +11,10 @@ typedef struct complex_t {
 } COMPLEX;
 
 typedef char* CHARP;
-oml_define_map(int,int);
-oml_define_map(double,int);
-oml_define_map(CHARP,int);
-oml_define_map(int,COMPLEX);
+oml_define_map(int, int);
+oml_define_map(int, double);
+oml_define_map(CHARP, int);
+oml_define_map(int, COMPLEX);
 
 oml_map(int, int) h;
 
@@ -88,32 +88,40 @@ void test_map_int() {
 }
 
 void test_map_double() {
-  oml_map(double, int) h;
+  oml_map(int, double) h;
   oml_chk_ok_exit(oml_map_init(&h, MAP_BITS));
 
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 0);
-  oml_chk_ok_exit(oml_map_add(&h, 4.4, 20));
+  oml_chk_ok_exit(oml_map_add(&h, 20, 4.4));
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 1);
 
-  oml_chk_ok_exit(oml_map_add(&h, 7.7, 35));
-  oml_chk_ok_exit(oml_map_add(&h, 1.1, 5));
-  oml_chk_ok_exit(oml_map_add(&h, 12.12, 60));
-  oml_chk_ok_exit(oml_map_add(&h, 3.3, 12));
+  oml_chk_ok_exit(oml_map_add(&h, 35, 7.7));
+  oml_chk_ok_exit(oml_map_add(&h, 5, 1.1));
+  oml_chk_ok_exit(oml_map_add(&h, 60, 12.12));
+  oml_chk_ok_exit(oml_map_add(&h, 12, 3.3));
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 5);
 
+  oml_map_iterator(int, double) it;
+  int key;
+  double val = 0.0;
+  oml_chk_ok_exit(oml_map_find(&h, 12.12, &it));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &key, &val));
+  oml_chk_exit(key == 60 && val == 12.12);
 
-  int val = 0.0;
-  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3, &val, double_eq_eps));
-  oml_chk_exit(val == 12);
-  val = 0.0;
-  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3, &val, double_eq_eps));
-  oml_chk_exit(val == 12);
+  oml_map_begin(&h, &it);
+  oml_chk_ok_exit(oml_map_find_eq(&h, 12.12 + 0.001, &it, double_eq_eps));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &key, &val));
+  oml_chk_exit(key == 60 && val == 12.12);
+
+  oml_map_begin(&h, &it);
+  oml_chk_ok_exit(oml_map_find_eq(&h, 12.12 - 0.001, &it, double_eq_eps));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &key, &val));
+  oml_chk_exit(key == 60 && val == 12.12);
 
   printf("Map dump:\n");
-  oml_map_iterator(double, int) it;
   for (oml_map_begin(&h, &it); oml_map_has_value(&h, &it); oml_map_next(&h, &it)) {
     double k;
     int v;
