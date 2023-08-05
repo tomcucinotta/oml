@@ -73,6 +73,7 @@ void test_map_int() {
   oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
   oml_chk_exit(k == 12);
   oml_chk_exit(v == 60);
+  oml_chk_exit(oml_map_value(&h, &it) == 60);
   oml_chk_ok_exit(oml_map_iterator_set(&h, &it, 33));
   oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
   oml_chk_exit(v == 33);

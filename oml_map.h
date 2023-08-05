@@ -180,6 +180,9 @@
   __rv; \
 })
 
+/** Retrieve the current element of a forward iteration, if any. **/
+#define oml_map_value(this, p_it) (oml_pair_second(&oml_list_value(&(this)->elems[(p_it)->pos], &(p_it)->it)))
+
 #define oml_map_iterator_set(this, p_it, value) ({ \
   oml_rv __rv = OML_OK; \
   do { \
