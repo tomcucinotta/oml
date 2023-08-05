@@ -223,24 +223,6 @@
   __rv; \
 })
 
-#define oml_map_find(this, value, p_it) ({ \
-  oml_rv __rv = OML_E_NOT_FOUND; \
-  typeof(value) __value = (value); \
-  do { \
-    if ((p_it)->pos == -1) \
-      __rv = OML_E_NOT_FOUND; \
-    for (oml_map_begin((this), (p_it)); \
-         oml_map_has_value((this), (p_it));  \
-         oml_map_next((this), (p_it))) { \
-      if (oml_map_value((this), (p_it)) == __value) { \
-        __rv = OML_OK; \
-        break; \
-      } \
-    } \
-  } while (0); \
-  __rv; \
-})
-
 #define oml_map_find_eq(this, value, p_it, f_eq) ({  \
   oml_rv __rv = OML_E_NOT_FOUND; \
   typeof(value) __value = (value); \
@@ -258,5 +240,8 @@
   } while (0); \
   __rv; \
 })
+
+#define oml_map_find(this, value, p_it) \
+  (oml_map_find_eq((this), (value), (p_it), oml_default_eq))
 
 #endif /* __OML_MAP_H__ */
