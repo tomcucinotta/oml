@@ -145,6 +145,8 @@
 /** Return the current size of the map */
 #define oml_map_size(this) ((this)->num_elems)
 
+#define oml_map_empty(this) ((this)->num_elems == 0)
+
 #define oml_map_begin(this, p_it) ({ \
   oml_rv __rv = OML_OK; \
   do { \

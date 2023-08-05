@@ -39,6 +39,7 @@ void test_map_int() {
 
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 0);
+  oml_chk_exit(oml_map_empty(&h));
   oml_chk_ok_exit(oml_map_add(&h, 4, 20));
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 1);
