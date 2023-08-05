@@ -5,10 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct complex_t {
+    int x;
+    int y;
+} COMPLEX;
+
 typedef char* CHARP;
 oml_define_map(int,int);
 oml_define_map(double,int);
 oml_define_map(CHARP,int);
+oml_define_map(int,COMPLEX);
 
 oml_map(int, int) h;
 
@@ -26,6 +32,59 @@ void test_iter_dump(oml_map(int, int) *p) {
 }
 
 #define double_eq_eps(a, b) (((a) - (b)) <= 0.01 && ((b) - (a)) <= 0.01)
+
+void test_map_int() {
+  oml_map(int, int) h;
+  oml_chk_ok_exit(oml_map_init(&h, MAP_BITS));
+
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 0);
+  oml_chk_ok_exit(oml_map_add(&h, 4, 20));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 1);
+
+  oml_chk_ok_exit(oml_map_add(&h, 7, 35));
+  oml_chk_ok_exit(oml_map_add(&h, 1, 5));
+  oml_chk_ok_exit(oml_map_add(&h, 12, 60));
+  oml_chk_ok_exit(oml_map_add(&h, 3, 12));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 5);
+
+  oml_chk_ok_exit(oml_map_add(&h, 4, 15));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 5);
+
+  int v;
+  oml_chk_ok_exit(oml_map_get(&h, 4, &v));
+  printf("Get val: %d\n", v);
+  oml_chk_exit(v == 15);
+
+  int k = 99;
+  printf("key %d is not present in map\n", k);
+  oml_chk_exit(oml_map_get(&h, k, &v) == OML_E_NOT_FOUND);
+
+  test_iter_dump(&h);
+
+  oml_map_iterator(int, int) it;
+
+  oml_chk_exit(oml_map_find(&h, 99, &it) == OML_E_NOT_FOUND);
+
+  oml_chk_ok_exit(oml_map_find(&h, 60, &it));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
+  oml_chk_exit(k == 12);
+  oml_chk_exit(v == 60);
+  oml_chk_ok_exit(oml_map_iterator_set(&h, &it, 33));
+  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
+  oml_chk_exit(v == 33);
+  oml_chk_ok_exit(oml_map_get(&h, 12, &v));
+  oml_chk_exit(v == 33);
+
+  oml_chk_exit(oml_map_size(&h) == 5);
+
+  test_iter_dump(&h);
+
+  oml_chk_ok_exit(oml_map_cleanup(&h));
+}
 
 void test_map_double() {
   oml_map(double, int) h;
@@ -100,59 +159,26 @@ void test_map_str() {
   oml_chk_ok(oml_map_cleanup(&h));
 }
 
-int main(int argc, char **argv) {
+void test_map_complex() {
+  oml_map(int, COMPLEX) h;
   oml_chk_ok_exit(oml_map_init(&h, MAP_BITS));
 
-  printf("Size of map: %d\n", oml_map_size(&h));
-  oml_chk_exit(oml_map_size(&h) == 0);
-  oml_chk_ok_exit(oml_map_add(&h, 4, 20));
-  printf("Size of map: %d\n", oml_map_size(&h));
-  oml_chk_exit(oml_map_size(&h) == 1);
+  COMPLEX c1;
+  c1.x = 10;
+  c1.y = 11;
+  oml_chk_ok_exit(oml_map_add(&h, 1, c1));
 
-  oml_chk_ok_exit(oml_map_add(&h, 7, 35));
-  oml_chk_ok_exit(oml_map_add(&h, 1, 5));
-  oml_chk_ok_exit(oml_map_add(&h, 12, 60));
-  oml_chk_ok_exit(oml_map_add(&h, 3, 12));
-  printf("Size of map: %d\n", oml_map_size(&h));
-  oml_chk_exit(oml_map_size(&h) == 5);
+  COMPLEX c2;
+  oml_chk_ok_exit(oml_map_get(&h, 1, &c2));
+  printf("Get val.x: %d\n", c2.x);
+  oml_chk_exit(c2.x== 10);
+}
 
-  oml_chk_ok_exit(oml_map_add(&h, 4, 15));
-  printf("Size of map: %d\n", oml_map_size(&h));
-  oml_chk_exit(oml_map_size(&h) == 5);
-
-  int v;
-  oml_chk_ok_exit(oml_map_get(&h, 4, &v));
-  printf("Get val: %d\n", v);
-  oml_chk_exit(v == 15);
-
-  int k = 99;
-  printf("key %d is not present in map\n", k);
-  oml_chk_exit(oml_map_get(&h, k, &v) == OML_E_NOT_FOUND);
-
-  test_iter_dump(&h);
-
-  oml_map_iterator(int, int) it;
-
-  oml_chk_exit(oml_map_find(&h, 99, &it) == OML_E_NOT_FOUND);
-
-  oml_chk_ok_exit(oml_map_find(&h, 60, &it));
-  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
-  oml_chk_exit(k == 12);
-  oml_chk_exit(v == 60);
-  oml_chk_ok_exit(oml_map_iterator_set(&h, &it, 33));
-  oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
-  oml_chk_exit(v == 33);
-  oml_chk_ok_exit(oml_map_get(&h, 12, &v));
-  oml_chk_exit(v == 33);
-
-  oml_chk_exit(oml_map_size(&h) == 5);
-
-  test_iter_dump(&h);
-
-  oml_chk_ok_exit(oml_map_cleanup(&h));
-
+int main(int argc, char **argv) {
+  test_map_int();
   test_map_double();
   test_map_str();
+  test_map_complex();
 
   printf("Test successful\n");
   return 0;
