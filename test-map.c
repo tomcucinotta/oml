@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef char* CHARP;
 oml_define_map(int,int);
 oml_define_map(double,int);
+oml_define_map(CHARP,int);
 
 oml_map(int, int) h;
 
@@ -42,11 +44,12 @@ void test_map_double() {
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 5);
 
+
   int val = 0.0;
-  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3 + 0.0001, &val, double_eq_eps));
+  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3, &val, double_eq_eps));
   oml_chk_exit(val == 12);
   val = 0.0;
-  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3 - 0.0001, &val, double_eq_eps));
+  oml_chk_ok_exit(oml_map_get_eq(&h, 3.3, &val, double_eq_eps));
   oml_chk_exit(val == 12);
 
   printf("Map dump:\n");
@@ -56,6 +59,42 @@ void test_map_double() {
     int v;
     oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
     printf("  (%g, %d)\n", k, v);
+  }
+
+  oml_chk_ok(oml_map_cleanup(&h));
+}
+
+
+void test_map_str() {
+  oml_map(CHARP, int) h;    
+  oml_chk_ok_exit(oml_map_init(&h, MAP_BITS));
+
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 0);
+  oml_chk_ok_exit(oml_map_add_eq(&h, "key1", 20, oml_str_eq));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 1);
+
+  oml_chk_ok_exit(oml_map_add_eq(&h, "key2", 35, oml_str_eq));
+  oml_chk_ok_exit(oml_map_add_eq(&h, "key1", 15, oml_str_eq));
+  printf("Size of map: %d\n", oml_map_size(&h));
+  oml_chk_exit(oml_map_size(&h) == 2);
+
+  int v;
+  oml_chk_ok_exit(oml_map_get_eq(&h, "key1", &v, oml_str_eq));
+  printf("Get val: %d\n", v);
+  oml_chk_exit(v == 15);
+
+  printf("key3 is not present in map\n");
+  oml_chk_exit(oml_map_get(&h, "key3", &v) == OML_E_NOT_FOUND);
+
+  printf("Map dump:\n");
+  oml_map_iterator(CHARP, int) it;
+  for (oml_map_begin(&h, &it); oml_map_has_value(&h, &it); oml_map_next(&h, &it)) {
+    char* k;
+    int v;
+    oml_chk_ok_exit(oml_map_iterator_get(&h, &it, &k, &v));
+    printf("  (%s, %d)\n", k, v);
   }
 
   oml_chk_ok(oml_map_cleanup(&h));
@@ -113,6 +152,7 @@ int main(int argc, char **argv) {
   oml_chk_ok_exit(oml_map_cleanup(&h));
 
   test_map_double();
+  test_map_str();
 
   printf("Test successful\n");
   return 0;
