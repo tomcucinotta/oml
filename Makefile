@@ -44,6 +44,7 @@ test-list-find.c: test-vector-find.c
 	replace.pl -r 's/_vector/_list/g' $@
 	replace.pl -r 's/_VECTOR/_LIST/g' $@
 
+.PHONY: doc
 doc:
 	doxygen
 
@@ -81,7 +82,7 @@ distclean: clean
 ChangeLog:
 	cvs2cl -P
 
-README:
+README: VERSION
 	sed -i -e 's/Version .*/Version '`cat VERSION`'/' README
 
 dist: dist-src
@@ -89,6 +90,7 @@ dist: dist-src
 dist-src: README
 	rm -rf /tmp/$(PACKAGE)-$(VERSION) && mkdir /tmp/$(PACKAGE)-$(VERSION) && cp -r * /tmp/$(PACKAGE)-$(VERSION) && cd /tmp/$(PACKAGE)-$(VERSION) && make distclean && cd .. && tar -czf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION) && echo "Distribution archive in /tmp/$(PACKAGE)-$(VERSION).tar.gz"
 
+.PHONY: dep
 dep:
 	makedepend -- -Y *.c
 
