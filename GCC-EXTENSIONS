@@ -36,7 +36,7 @@ given argument.
 The unnamed structure feature allows, in the context of
 OO-like macros, the operations of a child class to access
 the fields of the parent class without the need to
-explicitly go through the father field. This is useful
+explicitly go through the parent field. This is useful
 when the child does not want to deal with how many levels
 in the hierarchy it needs to go up, in order to find the
 field.

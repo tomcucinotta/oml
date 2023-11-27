@@ -12,7 +12,7 @@
 #define oml_define_dltree(value_type) \
   typedef struct oml_dltree_node_##value_type ##_t { \
     value_type value; \
-    struct oml_dltree_node_##value_type ##_t *p_father, *p_left_child, *p_right_child; \
+    struct oml_dltree_node_##value_type ##_t *p_parent, *p_left_child, *p_right_child; \
   } oml_dltree_node_##value_type ##_t; \
   typedef oml_dltree_node_##value_type ##_t *oml_dltree_iterator_##value_type ##_t; \
   typedef struct oml_dltree_##key_type ##_##value_type ##_t { \
@@ -50,9 +50,9 @@
     if ((it) == NULL || (it) == (this)->p_root) { /* Replace Root */ \
       __p_node->p_left_child = (this)->p_root; \
       __p_node->p_right_child = NULL; \
-      __p_node->p_father = NULL; \
+      __p_node->p_parent = NULL; \
       if ((this)->p_root != NULL) \
-        (this)->p_root->p_father = __p_node; \
+        (this)->p_root->p_parent = __p_node; \
       (this)->p_root = __p_node; \
       (this)->num_elems++; \
       break; \
@@ -60,8 +60,8 @@
     /* Replace non-root */ \
     __p_node->p_left_child = (it); \
     __p_node->p_right_child = NULL; \
-    __p_node->p_father = (it)->p_father; \
-    (it)->p_father = __p_node; \
+    __p_node->p_parent = (it)->p_parent; \
+    (it)->p_parent = __p_node; \
     (this)->num_elems++; \
   } while (0); \
   __rv; \
