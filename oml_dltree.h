@@ -67,6 +67,6 @@
   __rv; \
 })
 
-#define oml_heap_size(this) (this)->num_elems
+#define oml_dltree_size(this) ((this)->num_elems)
 
 #endif /*OML_HEAP_H_*/
