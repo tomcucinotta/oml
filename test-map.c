@@ -140,27 +140,27 @@ void test_map_str() {
 
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 0);
-  oml_chk_ok_exit(oml_map_add_eq(&h, "key1", 20, oml_str_eq));
+  oml_chk_ok_exit(oml_map_add_eq(&h, "key1", 20, oml_str_eq, oml_str_hash));
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 1);
 
-  oml_chk_ok_exit(oml_map_add_eq(&h, "key2", 35, oml_str_eq));
-  oml_chk_ok_exit(oml_map_add_eq(&h, "key1", 15, oml_str_eq));
+  oml_chk_ok_exit(oml_map_add_eq(&h, "key2", 35, oml_str_eq, oml_str_hash));
+  oml_chk_ok_exit(oml_map_add_eq(&h, "key1", 15, oml_str_eq, oml_str_hash));
   printf("Size of map: %d\n", oml_map_size(&h));
   oml_chk_exit(oml_map_size(&h) == 2);
 
   int v;
 
-  oml_chk_ok_exit(oml_map_get_eq(&h, "key1\x0rubbish", &v, oml_str_eq));
+  oml_chk_ok_exit(oml_map_get_eq(&h, "key1\x0rubbish", &v, oml_str_eq, oml_str_hash));
   printf("Get val: %d\n", v);
   oml_chk_exit(v == 15);
 
-  oml_chk_ok_exit(oml_map_get_eq(&h, "kkey1" + 1, &v, oml_str_eq));
+  oml_chk_ok_exit(oml_map_get_eq(&h, "kkey1" + 1, &v, oml_str_eq, oml_str_hash));
   printf("Get val: %d\n", v);
   oml_chk_exit(v == 15);
 
   char *s = "key1";
-  oml_chk_ok_exit(oml_map_get_eq(&h, s, &v, oml_str_eq));
+  oml_chk_ok_exit(oml_map_get_eq(&h, s, &v, oml_str_eq, oml_str_hash));
   printf("Get val: %d\n", v);
   oml_chk_exit(v == 15);
 

@@ -85,11 +85,11 @@
  **
  ** @note Adding a second time the same key to the map results in replacing the previously associated value.
  **/
-#define oml_map_add_eq(this, _key, _value, _op_key_eq) ({ \
+#define oml_map_add_eq(this, _key, _value, _op_key_eq, _op_key_hash) ({      \
   oml_rv __rv = OML_OK; \
   do { \
     typeof(_key) __key = (_key); \
-    int _a_pos = oml_default_hash(__key) % ((this)->max_num_elems); \
+    int _a_pos = _op_key_hash(__key) % ((this)->max_num_elems); \
     typeof(*((this)->p_it)) it; \
     __rv = oml_list_find_eq_param(&((this)->elems[_a_pos]), _key, &it, oml_map_node_eq, _op_key_eq); \
     if (__rv == OML_E_NOT_FOUND) { \
@@ -115,17 +115,18 @@
  * Add the pair (_key, _value) to the map, and store the corresponding
  * removal iterator in *_p_it.
  */
-#define oml_map_add(this, _key, _value) oml_map_add_eq((this), (_key), (_value), oml_default_eq)
+#define oml_map_add(this, _key, _value) \
+  oml_map_add_eq((this), (_key), (_value), oml_default_eq, oml_default_hash)
 
 
 /**
  ** Write corresponding value of _key in p_value
  **/
-#define oml_map_get_eq(this, _key, p_value, _op_key_eq) ({ \
+#define oml_map_get_eq(this, _key, p_value, _op_key_eq, _op_key_hash) ({     \
   oml_rv __rv = OML_OK; \
   do { \
     typeof(_key) __key = (_key); \
-    int _a_pos = oml_default_hash(__key) % ((this)->max_num_elems); \
+    int _a_pos = _op_key_hash(__key) % ((this)->max_num_elems); \
     typeof(*((this)->p_it)) it; \
     __rv = oml_list_find_eq_param(&((this)->elems[_a_pos]), _key, &it, oml_map_node_eq, _op_key_eq); \
     if (__rv == OML_E_NOT_FOUND) { \
@@ -140,7 +141,8 @@
   __rv; \
 })
 
-#define oml_map_get(this, _key, p_value) oml_map_get_eq((this), (_key), (p_value), oml_default_eq)
+#define oml_map_get(this, _key, p_value) \
+  oml_map_get_eq((this), (_key), (p_value), oml_default_eq, oml_default_hash)
 
 /** Return the current size of the map */
 #define oml_map_size(this) ((this)->num_elems)

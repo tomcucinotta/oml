@@ -58,4 +58,9 @@ static inline uint32_t joaat_hash_func(uint8_t *key, size_t len) {
 #  define oml_default_hash(_key) oml_default_hash_func((uint8_t *) &(_key), sizeof(_key))
 #endif
 
+#define oml_str_hash(_key) ({ \
+  char *__s = (_key); \
+  oml_default_hash_func((uint8_t *) __s, strlen(__s)); \
+})
+
 #endif /*_OML_COMMON_H_ */
