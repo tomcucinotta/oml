@@ -100,6 +100,7 @@ oml_debug.o: oml_debug.h
 oml_malloc.o: oml_debug.h oml_malloc.h
 oml_scope.o: oml_scope.h
 test-class-serialize.o: test-myclass.h
+test-dltree.o: oml_debug.h oml_dltree.h oml_malloc.h
 test-eheap.o: oml_debug.h oml_eheap.h oml_malloc.h oml_common.h
 test-func.o: oml_debug.h oml_func.h
 test-heap.o: oml_debug.h oml_heap.h oml_malloc.h oml_common.h
