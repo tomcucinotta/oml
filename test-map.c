@@ -16,8 +16,6 @@ oml_define_map(int, double);
 oml_define_map(CHARP, int);
 oml_define_map(int, COMPLEX);
 
-oml_map(int, int) h;
-
 #define MAP_BITS 3
 #define MAP_SIZE (1 << MAP_BITS)
 
