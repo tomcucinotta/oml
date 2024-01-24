@@ -4,7 +4,7 @@ TEST_PROGS=$(patsubst %.c,%,$(wildcard test-*.c))
 LIB_SRCS=$(patsubst test-%.c,,$(wildcard *.c oml_exceptions-dlex/*.c))
 LIB_OBJS=$(patsubst %.c,%.o,$(LIB_SRCS))
 OML_LIB=liboml.so
-CFLAGS+=-Wall -Wformat -fPIC -std=gnu99 -I. -Ioml_exceptions-dlex
+CFLAGS+=-Wall -Wformat -fPIC -fsanitize=address -std=gnu99 -I. -Ioml_exceptions-dlex
 LDLIBS=-L. -loml -lrt
 
 all: lib $(TEST_PROGS)
