@@ -190,6 +190,8 @@ void test_map_complex() {
   oml_chk_ok_exit(oml_map_get(&h, 1, &c2));
   printf("Get val.x: %d\n", c2.x);
   oml_chk_exit(c2.x== 10);
+
+  oml_map_cleanup(&h);
 }
 
 int main(int argc, char **argv) {

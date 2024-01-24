@@ -213,7 +213,7 @@
       break; \
     do \
       (p_it)->pos++; \
-    while (oml_list_size(&(this)->elems[(p_it)->pos]) == 0 && (p_it)->pos < (this)->max_num_elems); \
+    while ((p_it)->pos < (this)->max_num_elems && oml_list_size(&(this)->elems[(p_it)->pos]) == 0); \
     if ((p_it)->pos < (this)->max_num_elems) \
       oml_list_begin(&(this)->elems[(p_it)->pos], &(p_it)->it); \
     else { \
