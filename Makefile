@@ -107,7 +107,7 @@ test-heap.o: oml_debug.h oml_heap.h oml_malloc.h oml_common.h
 test-list.o: oml_debug.h oml_list.h oml_malloc.h oml_list_find.h oml_common.h
 test-lstack.o: oml_debug.h oml_lstack.h oml_list.h oml_malloc.h
 test-lstack.o: oml_list_find.h oml_common.h
-test-map.o: oml_debug.h oml_map.h oml_malloc.h oml_common.h oml_pair.h
+test-map.o: oml_debug.h oml_map.h oml_sync_map.h oml_malloc.h oml_common.h oml_pair.h
 test-map.o: oml_list.h oml_list_find.h
 test-oml-scope.o: oml_scope.h
 test-pair.o: oml_debug.h oml_pair.h oml_common.h

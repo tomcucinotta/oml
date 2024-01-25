@@ -1,9 +1,13 @@
 #define OML_DEBUG_LEVEL OML_LEVEL_DEBUG
 #include "oml_debug.h"
 #include "oml_map.h"
+#include "oml_sync_map.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#define PRODUCE 1000
+#define CONSUME 100
 
 typedef struct complex_t {
     int x;
@@ -15,6 +19,8 @@ oml_define_map(int, int);
 oml_define_map(int, double);
 oml_define_map(CHARP, int);
 oml_define_map(int, COMPLEX);
+
+oml_define_sync_map(int, int);
 
 #define MAP_BITS 3
 #define MAP_SIZE (1 << MAP_BITS)
@@ -194,11 +200,58 @@ void test_map_complex() {
   oml_map_cleanup(&h);
 }
 
+
+void* producer_function(void* data) {
+  oml_sync_map(int, int)* h = (oml_sync_map(int,int)*) data;
+
+  for (int i=0; i<PRODUCE; i++) {
+    oml_chk_ok_exit(oml_sync_map_add(h, 1, i));
+  }
+
+  return 0;
+}
+
+void* consumer_function(void* data) {
+  oml_sync_map(int, int)* h = (oml_sync_map(int,int)*) data;
+  int v;
+
+  int curr = 0;
+  int retry = 100000;
+  while (curr < retry && oml_sync_map_get(h, 1, &v) == OML_E_NOT_FOUND) {
+    curr += 1;
+  }
+  oml_chk_exit(curr < retry);
+
+  for (int i=0; i<CONSUME; i++) {
+    oml_chk_ok_exit(oml_sync_map_get(h, 1, &v));
+    oml_chk_exit(v >= 0);
+    oml_chk_exit(v < PRODUCE);
+  }
+
+  return 0;
+}
+
+void test_map_synchronized() {
+  oml_sync_map(int, int) h;
+  oml_chk_ok_exit(oml_sync_map_init(&h, MAP_BITS));
+
+  pthread_t producer;
+  pthread_t consumer;
+
+  oml_chk_exit(pthread_create(&producer, NULL, producer_function, (void *) &h) == 0);
+  oml_chk_exit(pthread_create(&consumer, NULL, consumer_function, (void *) &h) == 0);
+  pthread_join(producer, NULL);
+  pthread_join(consumer, NULL);
+
+  oml_chk_ok_exit(oml_sync_map_cleanup(&h));
+}
+
 int main(int argc, char **argv) {
   test_map_int();
   test_map_double();
   test_map_str();
   test_map_complex();
+  test_map_synchronized();
 
   printf("Test successful\n");
   return 0;

@@ -31,10 +31,55 @@
 #define oml_sync_region(p_mutex)			\
   auto void __sync(void);			\
   pthread_mutex_lock(p_mutex);			\
-  oml_log_debug("Acquired mutex : *" #p_mutex);	\
   __sync();					\
-  oml_log_debug("Releasing mutex: *" #p_mutex);	\
   pthread_mutex_unlock(p_mutex);		\
   void __sync(void) 
 
+#define oml_mutex_init(p_mtx) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if (pthread_mutex_init(p_mtx, NULL) != 0) { \
+        __rv = OML_E_INTERNAL_ERROR; \
+        perror("pthread_mutex_init: "); \
+        break; \
+    } \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_mutex_destroy(p_mtx) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if (pthread_mutex_destroy(p_mtx) != 0) { \
+        __rv = OML_E_INTERNAL_ERROR; \
+        perror("pthread_mutex_destroy: "); \
+        break; \
+    } \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_mutex_lock(p_mtx) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if (pthread_mutex_lock(p_mtx) != 0) { \
+        __rv = OML_E_INTERNAL_ERROR; \
+        perror("pthread_mutex_lock: "); \
+        break; \
+    } \
+  } while (0); \
+  __rv; \
+})
+
+#define oml_mutex_unlock(p_mtx) ({ \
+  oml_rv __rv = OML_OK; \
+  do { \
+    if (pthread_mutex_unlock(p_mtx) != 0) { \
+        __rv = OML_E_INTERNAL_ERROR; \
+        perror("pthread_mutex_lock: "); \
+        break; \
+    } \
+  } while (0); \
+  __rv; \
+})
 #endif /* __OML_SYNC_H__ */
