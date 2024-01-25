@@ -16,9 +16,20 @@ oml_sync(&m, int, f, int a, int b) {
   return a + b;
 }
 
+oml_sync(&m, int, g, int a, int b) {
+  int err;
+  if ((err = pthread_mutex_trylock(&m)) != 0)
+    oml_log_debug("pthread_mutex_trylock() failed as expected: %d", err);
+  oml_chk(err == EBUSY);
+  oml_log_debug("Computing %d * %d", a, b);
+  if (a == 0 && b == 0)
+    return 0;
+  return a * b;
+}
+
 int main() {
   printf("f(3, 5)=%d\n", f(3, 5));
-  printf("f(0, 0)=%d\n", f(0, 0));
+  printf("g(4, 7)=%d\n", g(4, 7));
 
   return 0;
 }

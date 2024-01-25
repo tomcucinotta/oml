@@ -28,12 +28,18 @@
   }                                             \
   rv function_name##__(params) 
 
-#define oml_sync_region(p_mutex)			\
-  auto void __sync(void);			\
+#define oml_sync_named_region(name, p_mutex)    \
+  auto void __sync## name (void);               \
   pthread_mutex_lock(p_mutex);			\
-  __sync();					\
+  __sync## name ();				\
   pthread_mutex_unlock(p_mutex);		\
-  void __sync(void) 
+  void __sync## name (void) 
+
+#define oml_sync_named_region2(name, p_mutex)   \
+  oml_sync_named_region(name, (p_mutex))
+
+#define oml_sync_region(p_mutex) \
+  oml_sync_named_region2(__COUNTER__, (p_mutex))
 
 #define oml_mutex_init(p_mtx) ({ \
   oml_rv __rv = OML_OK; \
